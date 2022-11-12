@@ -2,6 +2,7 @@ package angle
 
 import (
 	"math"
+	"time"
 
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
@@ -101,4 +102,14 @@ func (d Angle) Ceil() Angle {
 	}
 
 	return d1.ToSpecificType(d.angType)
+}
+
+func (a Angle) ToTime() time.Time {
+	if a.angType != angleType.DegreeMinuteSecond {
+		a = a.ToSpecificType(angleType.DegreeMinuteSecond)
+	}
+
+	now := time.Now()
+
+	return time.Date(now.Year(), now.Month(), now.Day(), int(a.degree), int(a.minute), int(a.second), 0, now.Location())
 }

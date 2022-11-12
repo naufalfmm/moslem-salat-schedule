@@ -1,6 +1,7 @@
 package moslemSalatSchedule
 
 import (
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
 	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/model"
@@ -105,8 +106,12 @@ func (i *impl) Dhuhr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, 
 		return model.SalatTime{}, err
 	}
 
+	angTime := salatOption.Longitude.Div(15).Neg().Add(angle.NewFromFloat64(12 + salatOption.Timezone)).Sub(angle.NewFromFloat64(salatOption.EquationOfTime))
+
 	return model.SalatTime{
+		Date:  salatOption.Date,
 		Salat: salatEnum.Dhuhr,
+		Time:  angTime.ToTime(),
 	}, nil
 }
 

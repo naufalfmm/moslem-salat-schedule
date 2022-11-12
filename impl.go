@@ -1,8 +1,6 @@
 package moslemSalatSchedule
 
 import (
-	"time"
-
 	"gitlab.com/naufalfmm/moslem-salat-schedule/option"
 )
 
@@ -24,16 +22,4 @@ func New(opts ...option.ApplyingOption) (MoslemSalatSchedule, error) {
 	return &impl{
 		option: option,
 	}, nil
-}
-
-func (i *impl) SetDate(date time.Time) MoslemSalatSchedule {
-	i.option.CalcOpt = i.option.CalcOpt.SetDate(date)
-
-	return i
-}
-
-func (i *impl) Now() MoslemSalatSchedule {
-	i.option.CalcOpt = i.option.CalcOpt.Now()
-
-	return i
 }

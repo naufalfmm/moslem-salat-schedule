@@ -67,6 +67,20 @@ func WithTimezone(timezone int64) ApplyingOption {
 	}
 }
 
+type withElevation struct {
+	elevation float64
+}
+
+func (w withElevation) Apply(o *Option) {
+	o.LocOpt.Elevation = w.elevation
+}
+
+func WithElevation(elevation float64) ApplyingOption {
+	return withElevation{
+		elevation: elevation,
+	}
+}
+
 type withFajrIshaZenith struct {
 	fajrZenith angle.Angle
 	ishaZenith angle.Angle

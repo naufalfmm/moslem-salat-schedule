@@ -7,25 +7,25 @@ import (
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 )
 
-func (d Angle) addToDecimalType(deg Angle) Angle {
-	if deg.angType != angleType.Decimal {
-		deg = deg.ToDecimal()
+func (a Angle) addToDecimalType(ang Angle) Angle {
+	if ang.angType != angleType.Decimal {
+		ang = ang.ToDecimal()
 	}
 
 	return Angle{
-		degree:  d.degree + deg.degree,
+		degree:  a.degree + ang.degree,
 		angType: angleType.Decimal,
 	}
 }
 
-func (d Angle) addToMinuteSecondType(deg Angle) Angle {
-	if deg.angType != angleType.DegreeMinuteSecond {
-		deg = deg.ToMinuteSecond()
+func (a Angle) addToMinuteSecondType(ang Angle) Angle {
+	if ang.angType != angleType.DegreeMinuteSecond {
+		ang = ang.ToMinuteSecond()
 	}
 
-	second := d.second + deg.second
-	minute := d.minute + deg.minute
-	degree := d.degree + deg.degree
+	second := a.second + ang.second
+	minute := a.minute + ang.minute
+	degree := a.degree + ang.degree
 
 	return Angle{
 		degree:  degree,
@@ -35,37 +35,37 @@ func (d Angle) addToMinuteSecondType(deg Angle) Angle {
 	}.prepareConvertMinuteSecond()
 }
 
-func (d Angle) addToAugendType(d1 Angle) Angle {
-	if d.neg && d1.neg {
-		return d.Abs().addToAugendType(d1.Abs()).Neg()
+func (a Angle) addToAugendType(a1 Angle) Angle {
+	if a.neg && a1.neg {
+		return a.Abs().addToAugendType(a1.Abs()).Neg()
 	}
 
-	if d.neg {
-		return d1.ToSpecificType(d.angType).Sub(d.Abs())
+	if a.neg {
+		return a1.ToSpecificType(a.angType).Sub(a.Abs())
 	}
 
-	if d1.neg {
-		return d.Sub(d1.Abs())
+	if a1.neg {
+		return a.Sub(a1.Abs())
 	}
 
-	if d.angType == angleType.Decimal {
-		return d.addToDecimalType(d1)
+	if a.angType == angleType.Decimal {
+		return a.addToDecimalType(a1)
 	}
 
-	return d.addToMinuteSecondType(d1)
+	return a.addToMinuteSecondType(a1)
 }
 
-func (d Angle) subToDecimalType(d1 Angle) Angle {
-	if d1.angType != angleType.Decimal {
-		d1 = d1.ToDecimal()
+func (a Angle) subToDecimalType(a1 Angle) Angle {
+	if a1.angType != angleType.Decimal {
+		a1 = a1.ToDecimal()
 	}
 
-	if d1.GreatherThan(d) {
-		return d1.subToDecimalType(d).Neg()
+	if a1.GreatherThan(a) {
+		return a1.subToDecimalType(a).Neg()
 	}
 
 	return Angle{
-		degree:  math.Abs(d.degree - d1.degree),
+		degree:  math.Abs(a.degree - a1.degree),
 		angType: angleType.Decimal,
 	}
 }
@@ -78,19 +78,19 @@ func takeForSub(value, upperValue float64) (float64, float64) {
 	return value + consts.TimeFormatConverter, upperValue - consts.DecimalOne
 }
 
-func (d Angle) prepareMinuend(d1 Angle) Angle {
-	second := d.second
-	minute := d.minute
-	degree := d.degree
+func (a Angle) prepareMinuend(a1 Angle) Angle {
+	second := a.second
+	minute := a.minute
+	degree := a.degree
 
-	if second < d1.second {
+	if second < a1.second {
 		second, minute = takeForSub(second, minute)
-		if second == d.second {
+		if second == a.second {
 			minute, degree = takeForSub(minute, degree)
 		}
 	}
 
-	if minute < d1.minute {
+	if minute < a1.minute {
 		minute, degree = takeForSub(minute, degree)
 	}
 
@@ -102,41 +102,53 @@ func (d Angle) prepareMinuend(d1 Angle) Angle {
 	}
 }
 
-func (d Angle) subToMinuteSecondType(d1 Angle) Angle {
-	if d1.angType != angleType.DegreeMinuteSecond {
-		d1 = d1.ToMinuteSecond()
+func (a Angle) subToMinuteSecondType(a1 Angle) Angle {
+	if a1.angType != angleType.DegreeMinuteSecond {
+		a1 = a1.ToMinuteSecond()
 	}
 
-	d = d.prepareMinuend(d1)
+	a = a.prepareMinuend(a1)
 
-	if d1.GreatherThan(d) {
-		return d1.subToMinuteSecondType(d).Neg()
+	if a1.GreatherThan(a) {
+		return a1.subToMinuteSecondType(a).Neg()
 	}
 
 	return Angle{
-		degree:  math.Abs(d.degree - d1.degree),
-		minute:  math.Abs(d.minute - d1.minute),
-		second:  math.Abs(d.second - d1.second),
+		degree:  math.Abs(a.degree - a1.degree),
+		minute:  math.Abs(a.minute - a1.minute),
+		second:  math.Abs(a.second - a1.second),
 		angType: angleType.DegreeMinuteSecond,
 	}.prepareConvertMinuteSecond()
 }
 
-func (d Angle) subToMinuendType(d1 Angle) Angle {
-	if d.neg && d1.neg {
-		return d1.Abs().ToSpecificType(d.angType).subToMinuendType(d1.Abs())
+func (a Angle) subToMinuendType(a1 Angle) Angle {
+	if a.neg && a1.neg {
+		return a1.Abs().ToSpecificType(a.angType).subToMinuendType(a1.Abs())
 	}
 
-	if d.neg {
-		return d.Abs().addToAugendType(d1.Abs()).Neg()
+	if a.neg {
+		return a.Abs().addToAugendType(a1.Abs()).Neg()
 	}
 
-	if d1.neg {
-		return d.Abs().addToAugendType(d1.Abs())
+	if a1.neg {
+		return a.Abs().addToAugendType(a1.Abs())
 	}
 
-	if d1.angType == angleType.Decimal {
-		return d.subToDecimalType(d1)
+	if a1.angType == angleType.Decimal {
+		return a.subToDecimalType(a1)
 	}
 
-	return d.subToMinuteSecondType(d1)
+	return a.subToMinuteSecondType(a1)
+}
+
+func (a Angle) divToDividendType(d float64) Angle {
+	angType := a.angType
+
+	if a.angType != angleType.Decimal {
+		a = a.ToDecimal()
+	}
+
+	a.degree = a.degree / d
+
+	return a.ToSpecificType(angType)
 }
