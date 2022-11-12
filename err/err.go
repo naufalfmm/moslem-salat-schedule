@@ -8,4 +8,7 @@ var (
 	ErrDateMissing       = errors.New("date missing")
 	ErrFajrZenithMissing = errors.New("fajr zenith angle missing")
 	ErrIshaZenithMissing = errors.New("isha zenith angle missing")
+	ErrTimezoneMissing   = errors.New("timezone missing")
+	ErrLatitudeMissing   = errors.New("latitude missing")
+	ErrLongitudeMissing  = errors.New("longitude missing")
 )

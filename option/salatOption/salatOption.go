@@ -11,6 +11,18 @@ import (
 type SalatOption struct {
 	Date time.Time
 
+	FajrZenith     angle.Angle
+	IshaZenith     angle.Angle
+	IshaZenithType sunZenithEnum.IshaZenithType
+
+	SolarDeclination float64
+	EquationOfTime   float64
+
+	Latitude  angle.Angle
+	Longitude angle.Angle
+	Elevation float64
+	Timezone  float64
+
 	julianDate                  float64
 	julianDay                   float64
 	solarMeanAnomaly            float64
@@ -19,13 +31,6 @@ type SalatOption struct {
 	sunEarthRadius              float64
 	earthEclipticTilt           float64
 	solarRightAscension         float64
-
-	FajrZenith     angle.Angle
-	IshaZenith     angle.Angle
-	IshaZenithType sunZenithEnum.IshaZenithType
-
-	SolarDeclination float64
-	EquationOfTime   float64
 }
 
 func (s SalatOption) SetDate(date time.Time) SalatOption {

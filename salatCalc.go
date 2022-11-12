@@ -17,6 +17,18 @@ func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.CalcOpt, sa
 		opt.Date = defaultOpt.Date
 	}
 
+	if opt.Timezone == 0 {
+		return salatOption.SalatOption{}, err.ErrTimezoneMissing
+	}
+
+	if opt.Latitude.IsZero() {
+		return salatOption.SalatOption{}, err.ErrLatitudeMissing
+	}
+
+	if opt.Longitude.IsZero() {
+		return salatOption.SalatOption{}, err.ErrLongitudeMissing
+	}
+
 	if salat == salatEnum.Fajr {
 		if opt.FajrZenith.IsZero() {
 			if defaultOpt.FajrZenith.IsZero() {
@@ -70,7 +82,19 @@ func (i *impl) Fajr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, e
 }
 
 func (i *impl) Dhuhr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+	salatOption := salatOption.SalatOption{
+		Date:             i.option.CalcOpt.Date,
+		FajrZenith:       i.option.CalcOpt.FajrZenith,
+		IshaZenith:       i.option.CalcOpt.IshaZenith,
+		IshaZenithType:   i.option.CalcOpt.IshaZenithType,
+		SolarDeclination: i.option.CalcOpt.SolarDeclination,
+		EquationOfTime:   i.option.CalcOpt.EquationOfTime,
+
+		Latitude:  i.option.LocOpt.Latitude,
+		Longitude: i.option.LocOpt.Longitude,
+		Elevation: i.option.LocOpt.Elevation,
+		Timezone:  i.option.LocOpt.Timezone,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
