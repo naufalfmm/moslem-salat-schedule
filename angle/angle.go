@@ -5,17 +5,17 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
-	"github.com/shopspring/decimal"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 )
 
 type Angle struct {
-	degree decimal.Decimal
-	minute decimal.Decimal
-	second decimal.Decimal
+	degree float64
+	minute float64
+	second float64
 
 	neg     bool
 	angType angleType.AngleType
@@ -23,18 +23,18 @@ type Angle struct {
 
 func (d *Angle) fillBySymbol(src string, symbol rune) error {
 	if symbol == consts.DegreeSymbolRune {
-		if err := d.degree.Scan(src); err != nil {
+		if err := json.Unmarshal([]byte(src), &d.degree); err != nil {
 			return err
 		}
 	}
 
 	if symbol == consts.MinuteSymbolRune {
-		if err := d.minute.Scan(src); err != nil {
+		if err := json.Unmarshal([]byte(src), &d.minute); err != nil {
 			return err
 		}
 	}
 
-	if err := d.second.Scan(src); err != nil {
+	if err := json.Unmarshal([]byte(src), &d.second); err != nil {
 		return err
 	}
 
@@ -111,12 +111,12 @@ func (d Angle) String() string {
 	}
 
 	if d.angType == angleType.Decimal {
-		return fmt.Sprintf("%s%s", neg, d.degree.String()+string(consts.DegreeSymbolRune))
+		return fmt.Sprintf("%s%s", neg, strconv.FormatFloat(d.degree, 'f', -1, 64)+string(consts.DegreeSymbolRune))
 	}
 
-	return fmt.Sprintf("%s%s", neg, d.degree.String()+string(consts.DegreeSymbolRune)+
-		d.minute.String()+string(consts.MinuteSymbolRune)+
-		d.second.String()+string(consts.SecondSymbolRune))
+	return fmt.Sprintf("%s%s", neg, strconv.FormatFloat(d.degree, 'f', -1, 64)+string(consts.DegreeSymbolRune)+
+		strconv.FormatFloat(d.minute, 'f', -1, 64)+string(consts.MinuteSymbolRune)+
+		strconv.FormatFloat(d.second, 'f', -1, 64)+string(consts.SecondSymbolRune))
 }
 
 func (d Angle) MarshalJSON() ([]byte, error) {

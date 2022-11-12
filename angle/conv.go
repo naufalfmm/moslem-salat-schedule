@@ -1,8 +1,10 @@
 package angle
 
 import (
-	"github.com/shopspring/decimal"
+	"math"
+
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 )
 
 func (d Angle) ToMinuteSecond() Angle {
@@ -11,18 +13,18 @@ func (d Angle) ToMinuteSecond() Angle {
 	}
 
 	decDegree := Angle{
-		degree:  d.degree.Truncate(0),
+		degree:  math.Trunc(d.degree),
 		neg:     d.neg,
 		angType: angleType.DegreeMinuteSecond,
 	}
 
-	restDegree := d.degree.Sub(decDegree.degree).Mul(decimal.NewFromInt(60))
-	if restDegree.GreaterThan(decimal.Zero) {
-		decDegree.minute = restDegree.Truncate(0)
-		restDegree = restDegree.Sub(decDegree.minute).Mul(decimal.NewFromInt(60))
+	restDegree := (d.degree - decDegree.degree) * consts.TimeFormatConverter
+	if restDegree > consts.DecimalZero {
+		decDegree.minute = math.Trunc(restDegree)
+		restDegree = (restDegree - decDegree.minute) * consts.TimeFormatConverter
 	}
 
-	if restDegree.GreaterThan(decimal.Zero) {
+	if restDegree > consts.DecimalZero {
 		decDegree.second = restDegree
 	}
 
@@ -35,7 +37,7 @@ func (d Angle) ToDecimal() Angle {
 	}
 
 	return Angle{
-		degree:  d.degree.Add(d.minute.Div(decimal.NewFromInt(60))).Add(d.second.Div(decimal.NewFromInt(3600))),
+		degree:  d.degree + (d.minute / consts.TimeFormatConverter) + (d.second / (consts.TimeFormatConverter * consts.TimeFormatConverter)),
 		neg:     d.neg,
 		angType: angleType.Decimal,
 	}
@@ -78,7 +80,7 @@ func (d Angle) Floor() Angle {
 	}
 
 	d1 = Angle{
-		degree:  d1.degree.Floor(),
+		degree:  math.Floor(d1.degree),
 		neg:     d1.neg,
 		angType: d1.angType,
 	}
@@ -93,7 +95,7 @@ func (d Angle) Ceil() Angle {
 	}
 
 	d1 = Angle{
-		degree:  d1.degree.Ceil(),
+		degree:  math.Ceil(d1.degree),
 		neg:     d1.neg,
 		angType: d1.angType,
 	}

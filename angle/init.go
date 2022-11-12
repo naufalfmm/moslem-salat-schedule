@@ -1,22 +1,28 @@
 package angle
 
 import (
-	"github.com/shopspring/decimal"
+	"math"
+
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 )
 
-var Zero = NewFromDecimal(decimal.Zero)
+var Zero = NewFromFloat64(consts.DecimalZero)
 
-func NewFromDecimal(dec decimal.Decimal) Angle {
-	return Angle{
-		degree:  dec.Abs(),
-		neg:     dec.IsNegative(),
-		angType: angleType.Decimal,
-	}
-}
+// func NewFromDecimal(dec float64) Angle {
+// 	return Angle{
+// 		degree:  dec.Abs(),
+// 		neg:     dec.IsNegative(),
+// 		angType: angleType.Decimal,
+// 	}
+// }
 
 func NewFromFloat64(val float64) Angle {
-	return NewFromDecimal(decimal.NewFromFloat(val))
+	return Angle{
+		degree:  math.Abs(val),
+		neg:     val < 0,
+		angType: angleType.Decimal,
+	}
 }
 
 func NewFromString(str string) (Angle, error) {
@@ -29,22 +35,22 @@ func NewFromString(str string) (Angle, error) {
 	return deg, nil
 }
 
-func NewFromDegreeMinuteSecond(degree, minute, second decimal.Decimal) Angle {
+func NewFromDegreeMinuteSecond(degree, minute, second float64) Angle {
 	neg := false
 
-	if degree.IsNegative() {
+	if degree < 0 {
 		neg = true
-		degree = degree.Abs()
+		degree = math.Abs(degree)
 	}
 
-	if minute.IsNegative() {
+	if minute < 0 {
 		neg = true
-		minute = minute.Abs()
+		minute = math.Abs(minute)
 	}
 
-	if second.IsNegative() {
+	if second < 0 {
 		neg = true
-		second = second.Abs()
+		second = math.Abs(second)
 	}
 
 	return Angle{

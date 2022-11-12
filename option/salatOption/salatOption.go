@@ -1,32 +1,31 @@
 package salatOption
 
 import (
+	"math"
 	"time"
 
-	"github.com/shopspring/decimal"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
 	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/utils"
 )
 
 type SalatOption struct {
 	Date time.Time
 
-	julianDate                  decimal.Decimal
-	julianDay                   decimal.Decimal
-	solarMeanAnomaly            decimal.Decimal
-	solarMeanLong               decimal.Decimal
-	solarGeocentricEclipticLong decimal.Decimal
-	sunEarthRadius              decimal.Decimal
-	earthEclipticTilt           decimal.Decimal
-	solarRightAscension         decimal.Decimal
+	julianDate                  float64
+	julianDay                   float64
+	solarMeanAnomaly            float64
+	solarMeanLong               float64
+	solarGeocentricEclipticLong float64
+	sunEarthRadius              float64
+	earthEclipticTilt           float64
+	solarRightAscension         float64
 
 	FajrZenith     angle.Angle
 	IshaZenith     angle.Angle
 	IshaZenithType sunZenithEnum.IshaZenithType
 
-	SolarDeclination decimal.Decimal
-	EquationOfTime   decimal.Decimal
+	SolarDeclination float64
+	EquationOfTime   float64
 }
 
 func (s SalatOption) SetDate(date time.Time) SalatOption {
@@ -34,26 +33,26 @@ func (s SalatOption) SetDate(date time.Time) SalatOption {
 
 	s = s.calcJulianDay()
 
-	s.julianDate = s.julianDay.Sub(decimal.NewFromFloat(2451545.0))
+	s.julianDate = s.julianDay - 2451545.0
 	// g = 357.529 + 0.98560028* d;
 	// q = 280.459 + 0.98564736* d;
 	// L = q + 1.915* sin(g) + 0.020* sin(2*g);
-	s.solarMeanAnomaly = decimal.NewFromFloat(357.529).Add(decimal.NewFromFloat(0.98560028).Mul(s.julianDate))
-	s.solarMeanLong = decimal.NewFromFloat(280.459).Add(decimal.NewFromFloat(0.98564736).Mul(s.julianDate))
-	s.solarGeocentricEclipticLong = s.solarMeanLong.
-		Add(decimal.NewFromFloat(1.915).Mul(s.solarMeanAnomaly.Sin())).
-		Add(decimal.NewFromFloat(0.020).Mul(decimal.NewFromInt(2).Mul(s.solarMeanAnomaly.Sin())))
+	s.solarMeanAnomaly = 357.529 + 0.98560028*s.julianDate
+	s.solarMeanLong = 280.459 + 0.98564736*s.julianDate
+	s.solarGeocentricEclipticLong = s.solarMeanLong +
+		1.915*math.Sin(s.solarMeanAnomaly) +
+		0.020*math.Sin(2.0*s.solarMeanAnomaly)
 	// R = 1.00014 – 0.01671* cos(g) – 0.00014* cos(2*g);
 	// e = 23.439 – 0.00000036* d;
 	// RA = arctan2(cos(e)* sin(L), cos(L))/ 15;
-	s.sunEarthRadius = decimal.NewFromFloat(1.00014).
-		Sub(decimal.NewFromFloat(0.01671).Mul(s.solarMeanAnomaly.Cos())).
-		Sub(decimal.NewFromFloat(0.00014).Mul(decimal.NewFromInt(2).Mul(s.solarMeanAnomaly.Cos())))
-	s.earthEclipticTilt = decimal.NewFromFloat(23.439).Sub(decimal.NewFromFloat(0.00000036).Mul(s.julianDate))
-	s.solarRightAscension = utils.Atan2(
-		s.earthEclipticTilt.Cos().Mul(s.solarGeocentricEclipticLong.Sin()),
-		s.solarGeocentricEclipticLong.Cos(),
-	).Div(decimal.NewFromFloat(15.0))
+	s.sunEarthRadius = 1.00014 -
+		0.01671*math.Cos(s.solarMeanAnomaly) -
+		0.00014*math.Cos(2.0*s.solarMeanAnomaly)
+	s.earthEclipticTilt = 23.439 - 0.00000036*s.julianDate
+	s.solarRightAscension = math.Atan2(
+		math.Cos(s.earthEclipticTilt)*math.Sin(s.solarGeocentricEclipticLong),
+		math.Cos(s.solarGeocentricEclipticLong),
+	) / 15.0
 
 	return s
 }
@@ -67,22 +66,22 @@ func (s SalatOption) calcJulianDay() SalatOption {
 		s = s.Now()
 	}
 
-	year := decimal.NewFromInt(int64(s.Date.Year()))
-	month := decimal.NewFromInt(int64(s.Date.Month()))
-	day := decimal.NewFromInt(int64(s.Date.Day()))
+	year := float64(s.Date.Year())
+	month := float64(s.Date.Month())
+	day := float64(s.Date.Day())
 
-	if month.Equal(decimal.NewFromInt(1)) || month.Equal(decimal.NewFromInt(2)) {
-		year = year.Sub(decimal.NewFromInt(1))
-		month = month.Add(decimal.NewFromInt(12))
+	if month == 1 || month == 2 {
+		year = year - 1
+		month = month + 12
 	}
 
-	a := year.Div(decimal.NewFromInt(100)).Floor()
-	b := decimal.NewFromInt(2).Sub(a).Add(a.Div(decimal.NewFromInt(4)).Floor())
+	a := math.Floor(year / 100.0)
+	b := 2.0 - a + math.Floor(a/4.0)
 
-	e := decimal.NewFromInt(36525).Mul(year.Add(decimal.NewFromInt(4716)).Div(decimal.NewFromInt(100))).Floor()
-	f := decimal.NewFromInt(306).Mul(month.Add(decimal.NewFromInt(1)).Div(decimal.NewFromInt(10))).Floor().Add(b)
+	e := math.Floor(36525.0 * ((year + 4716.0) / 100.0))
+	f := math.Floor(306.0*((month+1.0)/10.0)) + b
 
-	s.julianDate = e.Add(f).Add(day).Sub(decimal.NewFromFloat(1524.5))
+	s.julianDate = e + f + day - 1524.5
 
 	return s
 }

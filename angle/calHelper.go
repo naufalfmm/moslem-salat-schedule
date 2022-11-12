@@ -1,7 +1,8 @@
 package angle
 
 import (
-	"github.com/shopspring/decimal"
+	"math"
+
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 )
@@ -12,7 +13,7 @@ func (d Angle) addToDecimalType(deg Angle) Angle {
 	}
 
 	return Angle{
-		degree:  d.degree.Add(deg.degree),
+		degree:  d.degree + deg.degree,
 		angType: angleType.Decimal,
 	}
 }
@@ -22,9 +23,9 @@ func (d Angle) addToMinuteSecondType(deg Angle) Angle {
 		deg = deg.ToMinuteSecond()
 	}
 
-	second := d.second.Add(deg.second)
-	minute := d.minute.Add(deg.minute)
-	degree := d.degree.Add(deg.degree)
+	second := d.second + deg.second
+	minute := d.minute + deg.minute
+	degree := d.degree + deg.degree
 
 	return Angle{
 		degree:  degree,
@@ -64,17 +65,17 @@ func (d Angle) subToDecimalType(d1 Angle) Angle {
 	}
 
 	return Angle{
-		degree:  d.degree.Sub(d1.degree).Abs(),
+		degree:  math.Abs(d.degree - d1.degree),
 		angType: angleType.Decimal,
 	}
 }
 
-func takeForSub(value, upperValue decimal.Decimal) (decimal.Decimal, decimal.Decimal) {
-	if upperValue.IsZero() {
+func takeForSub(value, upperValue float64) (float64, float64) {
+	if upperValue == consts.DecimalZero {
 		return value, upperValue
 	}
 
-	return value.Add(consts.TimeFormatConverter), upperValue.Sub(consts.DecimalOne)
+	return value + consts.TimeFormatConverter, upperValue - consts.DecimalOne
 }
 
 func (d Angle) prepareMinuend(d1 Angle) Angle {
@@ -82,14 +83,14 @@ func (d Angle) prepareMinuend(d1 Angle) Angle {
 	minute := d.minute
 	degree := d.degree
 
-	if second.LessThan(d1.second) {
+	if second < d1.second {
 		second, minute = takeForSub(second, minute)
-		if second.Equal(d.second) {
+		if second == d.second {
 			minute, degree = takeForSub(minute, degree)
 		}
 	}
 
-	if minute.LessThan(d1.minute) {
+	if minute < d1.minute {
 		minute, degree = takeForSub(minute, degree)
 	}
 
@@ -113,9 +114,9 @@ func (d Angle) subToMinuteSecondType(d1 Angle) Angle {
 	}
 
 	return Angle{
-		degree:  d.degree.Sub(d1.degree).Abs(),
-		minute:  d.minute.Sub(d1.minute).Abs(),
-		second:  d.second.Sub(d1.second).Abs(),
+		degree:  math.Abs(d.degree - d1.degree),
+		minute:  math.Abs(d.minute - d1.minute),
+		second:  math.Abs(d.second - d1.second),
 		angType: angleType.DegreeMinuteSecond,
 	}.prepareConvertMinuteSecond()
 }

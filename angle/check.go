@@ -1,11 +1,13 @@
 package angle
 
+import "gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
+
 func (d Angle) IsNegative() bool {
 	return d.neg
 }
 
 func (d Angle) IsZero() bool {
-	return d.degree.IsZero() || d.minute.IsZero() || d.second.IsZero()
+	return d.degree == consts.DecimalZero || d.minute == consts.DecimalZero || d.second == consts.DecimalZero
 }
 
 func (d Angle) IsPositive() bool {
@@ -14,9 +16,9 @@ func (d Angle) IsPositive() bool {
 
 func (d Angle) Equal(d1 Angle) bool {
 	return d.neg && d1.neg &&
-		d.degree.Equal(d1.degree) &&
-		d.minute.Equal(d1.minute) &&
-		d.second.Equal(d1.second)
+		d.degree == d1.degree &&
+		d.minute == d1.minute &&
+		d.second == d1.second
 }
 
 func (d Angle) GreatherThan(d1 Angle) bool {
@@ -24,15 +26,15 @@ func (d Angle) GreatherThan(d1 Angle) bool {
 		return true
 	}
 
-	if d.degree.GreaterThan(d1.degree) {
+	if d.degree > d1.degree {
 		return true
 	}
 
-	if d.minute.GreaterThan(d1.minute) {
+	if d.minute > d1.minute {
 		return true
 	}
 
-	if d.second.GreaterThan(d1.second) {
+	if d.second > d1.second {
 		return true
 	}
 

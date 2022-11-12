@@ -1,7 +1,5 @@
 package consts
 
-import "github.com/shopspring/decimal"
-
 const (
 	DegreeSymbolRune   = '°'
 	MinuteSymbolRune   = '\''
@@ -10,6 +8,7 @@ const (
 )
 
 var (
-	TimeFormatConverter = decimal.NewFromInt(60)
-	DecimalOne          = decimal.NewFromInt(1)
+	TimeFormatConverter float64 = 60.0
+	DecimalOne          float64 = 1.0
+	DecimalZero         float64 = 0.0
 )

@@ -4,8 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 
-	"github.com/shopspring/decimal"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 )
 
@@ -59,7 +59,7 @@ var (
 		{"ISNA", "Islamic Society of North America", angle.NewFromFloat64(15), IshaZenith{angle.NewFromFloat64(15), Standard}},
 		{"MCW", "Moonsighting Committee Worldwide", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
 		{"MWL", "Muslim World League", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(17), Standard}},
-		{"UAU", "Umm Al-Qura University", angle.NewFromFloat64(18.5), IshaZenith{angle.NewFromDegreeMinuteSecond(decimal.Zero, decimal.NewFromFloat(90), decimal.Zero), AfterMagrib}},
+		{"UAU", "Umm Al-Qura University", angle.NewFromFloat64(18.5), IshaZenith{angle.NewFromDegreeMinuteSecond(consts.DecimalZero, float64(90.0), consts.DecimalZero), AfterMagrib}},
 		{"UIS", "University of Islamic Sciences, Karachi", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
 		{"JAKIM", "Jabatan Kemajuan Islam Malaysia", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
 		{"MUIS", "Majlis Ugama Islam Singapura", angle.NewFromFloat64(20), IshaZenith{angle.NewFromFloat64(18), Standard}},

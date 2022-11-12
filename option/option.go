@@ -3,7 +3,6 @@ package option
 import (
 	"errors"
 
-	"github.com/shopspring/decimal"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
 	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 )
@@ -20,7 +19,7 @@ func (opt Option) Validate() error {
 		return errors.New("latitude and longitude should have same degree type")
 	}
 
-	if opt.LocOpt.Elevation.IsZero() {
+	if opt.LocOpt.Elevation == 0 {
 		return errors.New("elevation should be exist")
 	}
 
@@ -59,7 +58,7 @@ type withTimezone struct {
 }
 
 func (w withTimezone) Apply(o *Option) {
-	o.LocOpt.Timezone = decimal.NewFromInt(w.timezone)
+	o.LocOpt.Timezone = float64(w.timezone)
 }
 
 func WithTimezone(timezone int64) ApplyingOption {
