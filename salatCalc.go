@@ -1,15 +1,22 @@
 package moslemSalatSchedule
 
 import (
+	"math"
+	"time"
+
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/consts"
+	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"
+	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/model"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/option"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/option/salatOption"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/utils/salatHighAltitude"
 )
 
-func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.CalcOpt, salat salatEnum.Salat) (salatOption.SalatOption, error) {
+func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.Option, salat salatEnum.Salat) (salatOption.SalatOption, error) {
 	if opt.Date.IsZero() {
 		if defaultOpt.Date.IsZero() {
 			return salatOption.SalatOption{}, err.ErrDateMissing
@@ -19,15 +26,35 @@ func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.CalcOpt, sa
 	}
 
 	if opt.Timezone == 0 {
-		return salatOption.SalatOption{}, err.ErrTimezoneMissing
+		if defaultOpt.Timezone == 0 {
+			return salatOption.SalatOption{}, err.ErrTimezoneMissing
+		}
+
+		opt.Timezone = defaultOpt.Timezone
 	}
 
 	if opt.Latitude.IsZero() {
-		return salatOption.SalatOption{}, err.ErrLatitudeMissing
+		if defaultOpt.Latitude.IsZero() {
+			return salatOption.SalatOption{}, err.ErrLatitudeMissing
+		}
+
+		opt.Latitude = defaultOpt.Latitude
 	}
 
 	if opt.Longitude.IsZero() {
-		return salatOption.SalatOption{}, err.ErrLongitudeMissing
+		if defaultOpt.Longitude.IsZero() {
+			return salatOption.SalatOption{}, err.ErrLongitudeMissing
+		}
+
+		opt.Longitude = defaultOpt.Longitude
+	}
+
+	if opt.RoundingTimeOption == 0 {
+		if defaultOpt.RoundingTimeOption == 0 {
+			opt.RoundingTimeOption = roundingTimeOptionEnum.Default
+		}
+
+		opt.RoundingTimeOption = defaultOpt.RoundingTimeOption
 	}
 
 	if salat == salatEnum.Fajr {
@@ -50,10 +77,20 @@ func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.CalcOpt, sa
 		}
 	}
 
+	if salat == salatEnum.Asr {
+		if opt.AsrMazhab == 0 {
+			if defaultOpt.AsrMazhab == 0 {
+				return salatOption.SalatOption{}, err.ErrMazhabMissing
+			}
+
+			opt.AsrMazhab = defaultOpt.AsrMazhab
+		}
+	}
+
 	return opt, nil
 }
 
-func checkSalatOptionForFiveTimes(opt salatOption.SalatOption, defaultOpt option.CalcOpt) (salatOption.SalatOption, error) {
+func checkSalatOptionForAllTimes(opt salatOption.SalatOption, defaultOpt option.Option) (salatOption.SalatOption, error) {
 	var err error
 	for _, salat := range salatEnum.GetAll() {
 		opt, err = checkSalatOption(opt, defaultOpt, salat)
@@ -65,120 +102,373 @@ func checkSalatOptionForFiveTimes(opt salatOption.SalatOption, defaultOpt option
 	return opt, nil
 }
 
+func sunriseAngleTime(salatOption salatOption.SalatOption) angle.Angle {
+	return salatOption.SunTransitTime.Sub(salatHighAltitude.CalcSalatHighAltitude(angle.NewDegreeFromFloat(consts.SunriseSunsetAngleFactor), salatOption.Latitude, salatOption.Declination, salatOption.Elevation))
+}
+
+func sunsetAngleTime(salatOption salatOption.SalatOption) angle.Angle {
+	return salatOption.SunTransitTime.Add(salatHighAltitude.CalcSalatHighAltitude(angle.NewDegreeFromFloat(consts.SunriseSunsetAngleFactor), salatOption.Latitude, salatOption.Declination, salatOption.Elevation))
+}
+
+func maghribAngleTime(salatOption salatOption.SalatOption) angle.Angle {
+	return sunsetAngleTime(salatOption).Add(angle.NewDegreeFromFloat(consts.MaghribSlightMarginMinute / 60.))
+}
+
+func (i *impl) Midnight(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
+	salatOpt := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
+
+	for _, opt := range opts {
+		opt.Apply(&salatOpt)
+	}
+
+	salatOpt, err := checkSalatOption(salatOpt, i.option, salatEnum.Isha)
+	if err != nil {
+		return model.SalatTime{}, err
+	}
+
+	yesterdaySunriseOpt := salatOpt
+	yesterdaySunriseOpt.Date = yesterdaySunriseOpt.Date.Add(-24 * time.Hour)
+	yesterdaySunset := sunsetAngleTime(salatOpt)
+
+	todaySunrise := sunriseAngleTime(salatOpt)
+
+	durRange := angle.NewFromDegreeMinuteSecond(24., 0., 0.).ToDegree().Sub(yesterdaySunset).Add(todaySunrise).Div(2.)
+
+	return model.SalatTime{
+		Date:  salatOpt.Date,
+		Salat: salatEnum.Midnight,
+		Time:  salatOpt.RoundingTimeOption.RoundTime(yesterdaySunset.Add(durRange).ToTime()),
+	}, nil
+}
+
 func (i *impl) Fajr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
 	}
 
-	salatOption, err := checkSalatOption(salatOption, i.option.CalcOpt, salatEnum.Fajr)
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Fajr)
 	if err != nil {
 		return model.SalatTime{}, err
 	}
 
 	return model.SalatTime{
+		Date:  salatOption.Date,
 		Salat: salatEnum.Fajr,
+		Time:  salatOption.RoundingTimeOption.RoundTime(salatOption.SunTransitTime.Sub(salatHighAltitude.CalcSalatHighAltitude(salatOption.FajrZenith, salatOption.Latitude, salatOption.Declination, salatOption.Elevation)).ToTime()),
+	}, nil
+}
+
+func (i *impl) Sunrise(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
+
+	for _, opt := range opts {
+		opt.Apply(&salatOption)
+	}
+
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Fajr)
+	if err != nil {
+		return model.SalatTime{}, err
+	}
+
+	return model.SalatTime{
+		Date:  salatOption.Date,
+		Salat: salatEnum.Sunrise,
+		Time:  salatOption.RoundingTimeOption.RoundTime(sunriseAngleTime(salatOption).ToTime()),
 	}, nil
 }
 
 func (i *impl) Dhuhr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
 	salatOption := salatOption.SalatOption{
-		Date:             i.option.CalcOpt.Date,
-		FajrZenith:       i.option.CalcOpt.FajrZenith,
-		IshaZenith:       i.option.CalcOpt.IshaZenith,
-		IshaZenithType:   i.option.CalcOpt.IshaZenithType,
-		SolarDeclination: i.option.CalcOpt.SolarDeclination,
-		EquationOfTime:   i.option.CalcOpt.EquationOfTime,
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.LocOpt.Latitude,
-		Longitude: i.option.LocOpt.Longitude,
-		Elevation: i.option.LocOpt.Elevation,
-		Timezone:  i.option.LocOpt.Timezone,
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
 	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
 	}
 
-	salatOption, err := checkSalatOption(salatOption, i.option.CalcOpt, salatEnum.Dhuhr)
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Dhuhr)
 	if err != nil {
 		return model.SalatTime{}, err
 	}
-
-	angTime := salatOption.Longitude.Div(15).Neg().Add(angle.NewFromFloat64(12 + salatOption.Timezone)).Sub(angle.NewFromFloat64(salatOption.EquationOfTime))
 
 	return model.SalatTime{
 		Date:  salatOption.Date,
 		Salat: salatEnum.Dhuhr,
-		Time:  angTime.ToTime(),
+		Time:  salatOption.RoundingTimeOption.RoundTime(salatOption.SunTransitTime.Add(angle.NewDegreeFromFloat(consts.DhuhrSlightMarginMinute / 60.)).ToTime()),
 	}, nil
 }
 
 func (i *impl) Asr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+		AsrMazhab:      i.option.AsrMazhab,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
 	}
 
-	salatOption, err := checkSalatOption(salatOption, i.option.CalcOpt, salatEnum.Asr)
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Asr)
+	if err != nil {
+		return model.SalatTime{}, err
+	}
+
+	asrFactorAng := angle.NewRadianFromFloat(math.Acos((math.Sin(math.Atan(1./(salatOption.AsrMazhab.AsrShadowLength()+math.Tan(salatOption.Latitude.ToRadian().Sub(salatOption.Declination).ToFloat())))) - math.Sin(salatOption.Latitude.ToRadian().ToFloat())*math.Sin(salatOption.Declination.ToFloat())) / (math.Cos(salatOption.Latitude.ToRadian().ToFloat()) * math.Cos(salatOption.Declination.ToFloat())))).ToDegree().Div(15.)
+
+	return model.SalatTime{
+		Date:  salatOption.Date,
+		Salat: salatEnum.Asr,
+		Time:  salatOption.RoundingTimeOption.RoundTime(salatOption.SunTransitTime.Add(asrFactorAng).ToTime()),
+	}, nil
+}
+
+func (i *impl) Sunset(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
+
+	for _, opt := range opts {
+		opt.Apply(&salatOption)
+	}
+
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Maghrib)
 	if err != nil {
 		return model.SalatTime{}, err
 	}
 
 	return model.SalatTime{
-		Salat: salatEnum.Asr,
+		Date:  salatOption.Date,
+		Salat: salatEnum.Sunset,
+		Time:  salatOption.RoundingTimeOption.RoundTime(sunsetAngleTime(salatOption).ToTime()),
 	}, nil
 }
 
 func (i *impl) Maghrib(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
 	}
 
-	salatOption, err := checkSalatOption(salatOption, i.option.CalcOpt, salatEnum.Maghrib)
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Maghrib)
 	if err != nil {
 		return model.SalatTime{}, err
 	}
 
 	return model.SalatTime{
+		Date:  salatOption.Date,
 		Salat: salatEnum.Maghrib,
+		Time:  salatOption.RoundingTimeOption.RoundTime(sunsetAngleTime(salatOption).Add(angle.NewDegreeFromFloat(consts.MaghribSlightMarginMinute / 60.)).ToTime()),
 	}, nil
 }
 
 func (i *impl) Isha(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+	salatOption := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&salatOption)
 	}
 
-	salatOption, err := checkSalatOption(salatOption, i.option.CalcOpt, salatEnum.Isha)
+	salatOption, err := checkSalatOption(salatOption, i.option, salatEnum.Isha)
 	if err != nil {
 		return model.SalatTime{}, err
 	}
 
+	angTime := angle.Angle{}
+	if salatOption.IshaZenithType == sunZenithEnum.Standard {
+		angTime = salatOption.SunTransitTime.Add(salatHighAltitude.CalcSalatHighAltitude(salatOption.IshaZenith, salatOption.Latitude, salatOption.Declination, salatOption.Elevation))
+	}
+
+	if salatOption.IshaZenithType == sunZenithEnum.AfterMagrib {
+		angTime = sunsetAngleTime(salatOption).Add(salatOption.IshaZenith)
+	}
+
 	return model.SalatTime{
+		Date:  salatOption.Date,
 		Salat: salatEnum.Isha,
+		Time:  salatOption.RoundingTimeOption.RoundTime(angTime.ToTime()),
 	}, nil
 }
 
-func (i *impl) AllFiveTimes(opts ...salatOption.ApplyingSalatOption) (model.FiveSalatTime, error) {
-	salatOption := salatOption.SalatOption{}
+func (i *impl) AllTimes(opts ...salatOption.ApplyingSalatOption) (model.AllSalatTimes, error) {
+	salatOpt := salatOption.SalatOption{
+		Date:           i.option.Date,
+		FajrZenith:     i.option.FajrZenith,
+		IshaZenith:     i.option.IshaZenith,
+		IshaZenithType: i.option.IshaZenithType,
+
+		Latitude:  i.option.Latitude,
+		Longitude: i.option.Longitude,
+		Elevation: i.option.Elevation,
+		Timezone:  i.option.Timezone,
+
+		RoundingTimeOption: i.option.RoundingTimeOption,
+
+		SunTransitTime: i.option.SunTransitTime,
+	}
 
 	for _, opt := range opts {
-		opt.Apply(&salatOption)
+		opt.Apply(&salatOpt)
 	}
 
-	salatOption, err := checkSalatOptionForFiveTimes(salatOption, i.option.CalcOpt)
+	salatOpt, err := checkSalatOptionForAllTimes(salatOpt, i.option)
 	if err != nil {
-		return model.FiveSalatTime{}, err
+		return model.AllSalatTimes{}, err
 	}
 
-	return model.FiveSalatTime{
-		Date: salatOption.Date,
+	fajr, err := i.Fajr(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	sunrise, err := i.Sunrise(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	dhuhr, err := i.Dhuhr(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	asr, err := i.Asr(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	sunset, err := i.Sunset(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	maghrib, err := i.Maghrib(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	isha, err := i.Isha(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
+	return model.AllSalatTimes{
+		Date: salatOpt.Date,
+		SalatTimes: []model.SalatTime{
+			fajr,
+			sunrise,
+			dhuhr,
+			asr,
+			sunset,
+			maghrib,
+			isha,
+		},
 	}, nil
 }

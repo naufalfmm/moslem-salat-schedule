@@ -4,28 +4,31 @@ import (
 	"math"
 
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleUnit"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 )
 
-var Zero = NewFromFloat64(consts.DecimalZero)
+var Zero = NewDegreeFromFloat(consts.DecimalZero)
 
-// func NewFromDecimal(dec float64) Angle {
-// 	return Angle{
-// 		degree:  dec.Abs(),
-// 		neg:     dec.IsNegative(),
-// 		angType: angleType.Decimal,
-// 	}
-// }
-
-func NewFromFloat64(val float64) Angle {
+func NewDegreeFromFloat(val float64) Angle {
 	return Angle{
 		degree:  math.Abs(val),
 		neg:     val < 0,
 		angType: angleType.Decimal,
+		angUnit: angleUnit.Degree,
 	}
 }
 
-func NewFromString(str string) (Angle, error) {
+func NewRadianFromFloat(val float64) Angle {
+	return Angle{
+		degree:  math.Abs(val),
+		neg:     val < 0,
+		angType: angleType.Decimal,
+		angUnit: angleUnit.Radian,
+	}
+}
+
+func NewDegreeFromString(str string) (Angle, error) {
 	var deg Angle
 
 	if err := deg.scanByString(str); err != nil {
@@ -60,5 +63,6 @@ func NewFromDegreeMinuteSecond(degree, minute, second float64) Angle {
 
 		neg:     neg,
 		angType: angleType.DegreeMinuteSecond,
+		angUnit: angleUnit.Degree,
 	}
 }

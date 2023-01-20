@@ -7,7 +7,7 @@ func (d Angle) IsNegative() bool {
 }
 
 func (d Angle) IsZero() bool {
-	return d.degree == consts.DecimalZero || d.minute == consts.DecimalZero || d.second == consts.DecimalZero
+	return d.degree == consts.DecimalZero && d.minute == consts.DecimalZero && d.second == consts.DecimalZero
 }
 
 func (d Angle) IsPositive() bool {

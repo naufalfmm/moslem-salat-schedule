@@ -1,6 +1,7 @@
 package moslemSalatSchedule
 
 import (
+	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/option"
 )
 
@@ -9,7 +10,9 @@ type impl struct {
 }
 
 func New(opts ...option.ApplyingOption) (MoslemSalatSchedule, error) {
-	option := option.Option{}
+	option := option.Option{
+		RoundingTimeOption: roundingTimeOptionEnum.Default,
+	}
 
 	for _, opt := range opts {
 		opt.Apply(&option)

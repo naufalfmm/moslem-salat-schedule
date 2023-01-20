@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleUnit"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 )
@@ -19,6 +20,7 @@ type Angle struct {
 
 	neg     bool
 	angType angleType.AngleType
+	angUnit angleUnit.AngleUnit
 }
 
 func (d *Angle) fillBySymbol(src string, symbol rune) error {
@@ -51,7 +53,7 @@ func (d *Angle) decideFillBySymbol(src string, symbol rune) error {
 	return d.fillBySymbol(src, symbol)
 }
 
-func (d *Angle) scanByString(src string) error {
+func (a *Angle) scanByString(src string) error {
 	var (
 		buff bytes.Buffer
 		s    rune
@@ -69,16 +71,16 @@ func (d *Angle) scanByString(src string) error {
 		}
 
 		if s == consts.NegativeSymbolRune {
-			d.neg = true
+			a.neg = true
 			continue
 		}
 
-		if err := d.decideFillBySymbol(buff.String(), s); err != nil {
+		if err := a.decideFillBySymbol(buff.String(), s); err != nil {
 			return err
 		}
 	}
 
-	return d.decideFillBySymbol(buff.String(), s)
+	return a.decideFillBySymbol(buff.String(), s)
 }
 
 func (d *Angle) UnmarshalParam(src string) error {
@@ -105,18 +107,24 @@ func (d *Angle) Scan(val interface{}) error {
 }
 
 func (d Angle) String() string {
-	var neg string
+	var angStr string
 	if d.neg {
-		neg = string(consts.NegativeSymbolRune)
+		angStr = string(consts.NegativeSymbolRune)
 	}
 
-	if d.angType == angleType.Decimal {
-		return fmt.Sprintf("%s%s", neg, strconv.FormatFloat(d.degree, 'f', -1, 64)+string(consts.DegreeSymbolRune))
+	if d.angType == angleType.DegreeMinuteSecond {
+		return fmt.Sprintf("%s%s", angStr, strconv.FormatFloat(d.degree, 'f', -1, 64)+string(consts.DegreeSymbolRune)+
+			strconv.FormatFloat(d.minute, 'f', -1, 64)+string(consts.MinuteSymbolRune)+
+			strconv.FormatFloat(d.second, 'f', -1, 64)+string(consts.SecondSymbolRune))
 	}
 
-	return fmt.Sprintf("%s%s", neg, strconv.FormatFloat(d.degree, 'f', -1, 64)+string(consts.DegreeSymbolRune)+
-		strconv.FormatFloat(d.minute, 'f', -1, 64)+string(consts.MinuteSymbolRune)+
-		strconv.FormatFloat(d.second, 'f', -1, 64)+string(consts.SecondSymbolRune))
+	angStr = fmt.Sprintf("%s%s", angStr, strconv.FormatFloat(d.degree, 'f', -1, 64))
+
+	if d.angUnit == angleUnit.Degree {
+		return fmt.Sprintf("%s%s", angStr, d.angUnit.Unit())
+	}
+
+	return fmt.Sprintf("%s%s", angStr, d.angUnit.Unit())
 }
 
 func (d Angle) MarshalJSON() ([]byte, error) {

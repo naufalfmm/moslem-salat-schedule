@@ -15,7 +15,7 @@ type (
 
 	SalatTimes []SalatTime
 
-	FiveSalatTime struct {
+	AllSalatTimes struct {
 		Date       time.Time  `json:"date"`
 		SalatTimes SalatTimes `json:"salat_times"`
 	}

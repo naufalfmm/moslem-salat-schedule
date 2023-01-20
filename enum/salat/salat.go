@@ -21,23 +21,32 @@ type (
 const (
 	// Fajr .
 	Fajr Salat = iota + 1
+	// Sunrise .
+	Sunrise
 	// Dhuhr .
 	Dhuhr
 	// Asr .
 	Asr
+	// Sunset .
+	Sunset
 	// Maghrib .
 	Maghrib
 	// Isha .
 	Isha
+	// Midnight .
+	Midnight
 )
 
 var (
 	salatConsts = []SalatClass{
 		{"fajr", "Fajr"},
+		{"sunrise", "Sunrise"},
 		{"dhuhr", "Dhuhr"},
 		{"asr", "Asr"},
+		{"sunset", "Sunset"},
 		{"maghrib", "Maghrib"},
 		{"isha", "Isha"},
+		{"midnight", "Midnight"},
 	}
 )
 

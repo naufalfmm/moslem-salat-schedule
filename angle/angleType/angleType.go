@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	degreeTypeConsts = []AngleTypeClass{
+	angleTypeConsts = []AngleTypeClass{
 		{"decimal", "Decimal"},
 		{"degreeMinuteSecond", "Degree Minute Second"},
 	}
@@ -23,16 +23,16 @@ var (
 
 // Code .
 func (c AngleType) Code() string {
-	if c < 1 || int(c) > len(degreeTypeConsts) {
+	if c < 1 || int(c) > len(angleTypeConsts) {
 		return ""
 	}
-	return degreeTypeConsts[c-1].Code
+	return angleTypeConsts[c-1].Code
 }
 
 // Name .
 func (c AngleType) Name() string {
-	if c < 1 || int(c) > len(degreeTypeConsts) {
+	if c < 1 || int(c) > len(angleTypeConsts) {
 		return ""
 	}
-	return degreeTypeConsts[c-1].Name
+	return angleTypeConsts[c-1].Name
 }

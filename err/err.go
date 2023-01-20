@@ -11,4 +11,5 @@ var (
 	ErrTimezoneMissing   = errors.New("timezone missing")
 	ErrLatitudeMissing   = errors.New("latitude missing")
 	ErrLongitudeMissing  = errors.New("longitude missing")
+	ErrMazhabMissing     = errors.New("mazhab missing")
 )

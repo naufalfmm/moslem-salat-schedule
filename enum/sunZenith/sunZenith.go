@@ -54,17 +54,17 @@ const (
 
 var (
 	sunZenithConsts = []SunZenithClass{
-		{"KEMENAG", "Kementerian Agama Republik Indonesia", angle.NewFromFloat64(20), IshaZenith{angle.NewFromFloat64(18), Standard}},
-		{"ESA", "Egyptian General Authority Survey", angle.NewFromFloat64(19.5), IshaZenith{angle.NewFromFloat64(17.5), Standard}},
-		{"ISNA", "Islamic Society of North America", angle.NewFromFloat64(15), IshaZenith{angle.NewFromFloat64(15), Standard}},
-		{"MCW", "Moonsighting Committee Worldwide", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
-		{"MWL", "Muslim World League", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(17), Standard}},
-		{"UAU", "Umm Al-Qura University", angle.NewFromFloat64(18.5), IshaZenith{angle.NewFromDegreeMinuteSecond(consts.DecimalZero, float64(90.0), consts.DecimalZero), AfterMagrib}},
-		{"UIS", "University of Islamic Sciences, Karachi", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
-		{"JAKIM", "Jabatan Kemajuan Islam Malaysia", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(18), Standard}},
-		{"MUIS", "Majlis Ugama Islam Singapura", angle.NewFromFloat64(20), IshaZenith{angle.NewFromFloat64(18), Standard}},
-		{"DIYANET", "Directorate of Religious Affairs", angle.NewFromFloat64(18), IshaZenith{angle.NewFromFloat64(17), Standard}},
-		{"UOIF", "Union of Islamic Organisations of France", angle.NewFromFloat64(12), IshaZenith{angle.NewFromFloat64(12), Standard}},
+		{"KEMENAG", "Kementerian Agama Republik Indonesia", angle.NewDegreeFromFloat(20), IshaZenith{angle.NewDegreeFromFloat(18), Standard}},
+		{"ESA", "Egyptian General Authority Survey", angle.NewDegreeFromFloat(19.5), IshaZenith{angle.NewDegreeFromFloat(17.5), Standard}},
+		{"ISNA", "Islamic Society of North America", angle.NewDegreeFromFloat(15), IshaZenith{angle.NewDegreeFromFloat(15), Standard}},
+		{"MCW", "Moonsighting Committee Worldwide", angle.NewDegreeFromFloat(18), IshaZenith{angle.NewDegreeFromFloat(18), Standard}},
+		{"MWL", "Muslim World League", angle.NewDegreeFromFloat(18), IshaZenith{angle.NewDegreeFromFloat(17), Standard}},
+		{"UAU", "Umm Al-Qura University", angle.NewDegreeFromFloat(18.5), IshaZenith{angle.NewFromDegreeMinuteSecond(1., 30., consts.DecimalZero), AfterMagrib}},
+		{"UIS", "University of Islamic Sciences, Karachi", angle.NewDegreeFromFloat(18), IshaZenith{angle.NewDegreeFromFloat(18), Standard}},
+		{"JAKIM", "Jabatan Kemajuan Islam Malaysia", angle.NewDegreeFromFloat(18), IshaZenith{angle.NewDegreeFromFloat(18), Standard}},
+		{"MUIS", "Majlis Ugama Islam Singapura", angle.NewDegreeFromFloat(20), IshaZenith{angle.NewDegreeFromFloat(18), Standard}},
+		{"DIYANET", "Directorate of Religious Affairs", angle.NewDegreeFromFloat(18), IshaZenith{angle.NewDegreeFromFloat(17), Standard}},
+		{"UOIF", "Union of Islamic Organisations of France", angle.NewDegreeFromFloat(12), IshaZenith{angle.NewDegreeFromFloat(12), Standard}},
 	}
 )
 

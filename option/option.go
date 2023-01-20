@@ -2,24 +2,51 @@ package option
 
 import (
 	"errors"
+	"time"
 
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	mazhabEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
+	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 )
 
 type Option struct {
 	Title string
 
-	LocOpt  LocOpt
-	CalcOpt CalcOpt
+	Date time.Time
+
+	Latitude  angle.Angle
+	Longitude angle.Angle
+	Elevation float64
+	Timezone  float64
+
+	FajrZenith     angle.Angle
+	IshaZenith     angle.Angle
+	IshaZenithType sunZenithEnum.IshaZenithType
+	AsrMazhab      mazhabEnum.Mazhab
+
+	RoundingTimeOption roundingTimeOptionEnum.RoundingTimeOption
+
+	julianDay  float64
+	julianDate float64
+
+	meanAnomaly    angle.Angle
+	meanLongSun    angle.Angle
+	eclipticLong   angle.Angle
+	obliquity      angle.Angle
+	rightAscension angle.Angle
+	equationOfTime angle.Angle
+
+	Declination    angle.Angle
+	SunTransitTime angle.Angle
 }
 
 func (opt Option) Validate() error {
-	if opt.LocOpt.Latitude.AngleType() != opt.LocOpt.Longitude.AngleType() {
+	if opt.Latitude.AngleType() != opt.Longitude.AngleType() {
 		return errors.New("latitude and longitude should have same degree type")
 	}
 
-	if opt.LocOpt.Elevation == 0 {
+	if opt.Elevation == 0 {
 		return errors.New("elevation should be exist")
 	}
 
@@ -42,8 +69,8 @@ type withLatitudeLongitude struct {
 }
 
 func (w withLatitudeLongitude) Apply(o *Option) {
-	o.LocOpt.Latitude = w.latitude
-	o.LocOpt.Longitude = w.longitude
+	o.Latitude = w.latitude
+	o.Longitude = w.longitude
 }
 
 func WithLatitudeLongitude(lat, long angle.Angle) ApplyingOption {
@@ -58,7 +85,7 @@ type withTimezone struct {
 }
 
 func (w withTimezone) Apply(o *Option) {
-	o.LocOpt.Timezone = float64(w.timezone)
+	o.Timezone = float64(w.timezone)
 }
 
 func WithTimezone(timezone int64) ApplyingOption {
@@ -72,7 +99,7 @@ type withElevation struct {
 }
 
 func (w withElevation) Apply(o *Option) {
-	o.LocOpt.Elevation = w.elevation
+	o.Elevation = w.elevation
 }
 
 func WithElevation(elevation float64) ApplyingOption {
@@ -87,9 +114,9 @@ type withFajrIshaZenith struct {
 }
 
 func (w withFajrIshaZenith) Apply(o *Option) {
-	o.CalcOpt.FajrZenith = w.fajrZenith
-	o.CalcOpt.IshaZenith = w.ishaZenith
-	o.CalcOpt.IshaZenithType = sunZenithEnum.Standard
+	o.FajrZenith = w.fajrZenith
+	o.IshaZenith = w.ishaZenith
+	o.IshaZenithType = sunZenithEnum.Standard
 }
 
 func WithFajrIshaZenith(fajrZenith, ishaZenith angle.Angle) ApplyingOption {
@@ -104,13 +131,41 @@ type withSunZenith struct {
 }
 
 func (w withSunZenith) Apply(o *Option) {
-	o.CalcOpt.FajrZenith = w.sunZenith.FajrZenith()
-	o.CalcOpt.IshaZenith = w.sunZenith.IshaZenith().Angle
-	o.CalcOpt.IshaZenithType = w.sunZenith.IshaZenith().Type
+	o.FajrZenith = w.sunZenith.FajrZenith()
+	o.IshaZenith = w.sunZenith.IshaZenith().Angle
+	o.IshaZenithType = w.sunZenith.IshaZenith().Type
 }
 
 func WithSunZenith(sunZenith sunZenithEnum.SunZenith) ApplyingOption {
 	return withSunZenith{
 		sunZenith: sunZenith,
+	}
+}
+
+type withMazhab struct {
+	mazhab mazhabEnum.Mazhab
+}
+
+func (w withMazhab) Apply(o *Option) {
+	o.AsrMazhab = w.mazhab
+}
+
+func WithMazhab(mazhab mazhabEnum.Mazhab) ApplyingOption {
+	return withMazhab{
+		mazhab: mazhab,
+	}
+}
+
+type withRoundingTimeOption struct {
+	roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption
+}
+
+func (w withRoundingTimeOption) Apply(o *Option) {
+	o.RoundingTimeOption = w.roundingTimeOpt
+}
+
+func WithRoundingTimeOption(roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption) ApplyingOption {
+	return withRoundingTimeOption{
+		roundingTimeOpt: roundingTimeOpt,
 	}
 }

@@ -5,10 +5,16 @@ import (
 	"time"
 
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleType"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/angleUnit"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
+	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/err"
 )
 
 func (d Angle) ToMinuteSecond() Angle {
+	if d.angUnit != angleUnit.Degree {
+		panic(err.ErrShouldBeDegree)
+	}
+
 	if d.angType == angleType.DegreeMinuteSecond {
 		return d
 	}
@@ -17,6 +23,7 @@ func (d Angle) ToMinuteSecond() Angle {
 		degree:  math.Trunc(d.degree),
 		neg:     d.neg,
 		angType: angleType.DegreeMinuteSecond,
+		angUnit: d.angUnit,
 	}
 
 	restDegree := (d.degree - decDegree.degree) * consts.TimeFormatConverter
@@ -41,6 +48,7 @@ func (d Angle) ToDecimal() Angle {
 		degree:  d.degree + (d.minute / consts.TimeFormatConverter) + (d.second / (consts.TimeFormatConverter * consts.TimeFormatConverter)),
 		neg:     d.neg,
 		angType: angleType.Decimal,
+		angUnit: d.angUnit,
 	}
 }
 
@@ -64,44 +72,58 @@ func (d Angle) ToSpecificType(angType angleType.AngleType) Angle {
 	return d.ToMinuteSecond()
 }
 
-func (d Angle) Abs() Angle {
-	d.neg = false
-	return d
+func (a Angle) ToRadian() Angle {
+	if a.angUnit == angleUnit.Radian {
+		return a
+	}
+
+	if a.angType != angleType.Decimal {
+		panic(err.ErrShouldBeDecimal)
+	}
+
+	return Angle{
+		degree:  a.degree * math.Pi / 180.0,
+		neg:     a.neg,
+		angType: a.angType,
+		angUnit: angleUnit.Radian,
+	}
 }
 
-func (d Angle) Neg() Angle {
-	d.neg = true
-	return d
+func (a Angle) ToDegree() Angle {
+	if a.angUnit == angleUnit.Degree {
+		return a
+	}
+
+	if a.angType != angleType.Decimal {
+		panic(err.ErrShouldBeDecimal)
+	}
+
+	return Angle{
+		degree:  a.degree * 180.0 / math.Pi,
+		neg:     a.neg,
+		angType: a.angType,
+		angUnit: angleUnit.Degree,
+	}
 }
 
-func (d Angle) Floor() Angle {
-	d1 := d
-	if d.angType != angleType.Decimal {
-		d1 = d.ToDecimal()
+func (a Angle) ToOtherUnit() Angle {
+	if a.angUnit == angleUnit.Radian {
+		return a.ToDegree()
 	}
 
-	d1 = Angle{
-		degree:  math.Floor(d1.degree),
-		neg:     d1.neg,
-		angType: d1.angType,
-	}
-
-	return d1.ToSpecificType(d.angType)
+	return a.ToRadian()
 }
 
-func (d Angle) Ceil() Angle {
-	d1 := d
-	if d.angType != angleType.Decimal {
-		d1 = d.ToDecimal()
+func (a Angle) ToSpecificUnit(unit angleUnit.AngleUnit) Angle {
+	if a.angUnit == unit {
+		return a
 	}
 
-	d1 = Angle{
-		degree:  math.Ceil(d1.degree),
-		neg:     d1.neg,
-		angType: d1.angType,
+	if unit == angleUnit.Radian {
+		return a.ToRadian()
 	}
 
-	return d1.ToSpecificType(d.angType)
+	return a.ToDegree()
 }
 
 func (a Angle) ToTime() time.Time {
@@ -112,4 +134,13 @@ func (a Angle) ToTime() time.Time {
 	now := time.Now()
 
 	return time.Date(now.Year(), now.Month(), now.Day(), int(a.degree), int(a.minute), int(a.second), 0, now.Location())
+}
+
+func (a Angle) ToFloat() float64 {
+	fact := 1.
+	if a.neg {
+		fact = -1.
+	}
+
+	return a.ToDecimal().degree * fact
 }
