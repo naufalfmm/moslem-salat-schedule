@@ -4,8 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle/consts"
+	"github.com/naufalfmm/angle"
+	"github.com/naufalfmm/angle/consts"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
 )
 

@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"github.com/naufalfmm/angle"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/utils/sunPosition"
 )
 

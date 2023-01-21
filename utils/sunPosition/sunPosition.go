@@ -3,7 +3,7 @@ package sunPosition
 import (
 	"math"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"github.com/naufalfmm/angle"
 )
 
 type SunPosition struct {

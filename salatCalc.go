@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"github.com/naufalfmm/angle"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/consts"
 	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"

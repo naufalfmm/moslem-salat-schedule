@@ -3,7 +3,7 @@ package salatOption
 import (
 	"time"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/angle"
+	"github.com/naufalfmm/angle"
 	mazhabEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
 	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
