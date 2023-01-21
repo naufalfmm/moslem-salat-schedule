@@ -1,9 +1,8 @@
 package sunPosition
 
 import (
-	"math"
-
 	"github.com/naufalfmm/angle"
+	"github.com/naufalfmm/angle/trig"
 )
 
 type SunPosition struct {
@@ -25,20 +24,17 @@ func CalSunPosition(julianDay, timezone float64, longitude angle.Angle) SunPosit
 
 	meanAnomaly := angle.NewDegreeFromFloat(357.259 + 0.98560028*julianDate).FullRotate()
 	meanLongSun := angle.NewDegreeFromFloat(280.459 + 0.98564736*julianDate).FullRotate()
-	eclipticLong := angle.NewDegreeFromFloat(1.915).
-		Mul(math.Sin(meanAnomaly.ToRadian().ToFloat())).
-		Add(angle.NewDegreeFromFloat(0.08).Mul(math.Sin(meanAnomaly.ToRadian().Mul(2).ToFloat()))).
-		Add(meanLongSun).FullRotate()
+	eclipticLong := meanLongSun.AddScalar(1.915*trig.Sin(meanAnomaly) + 0.02*trig.Sin(meanAnomaly.Mul(2.))).FullRotate()
 	obliquity := angle.NewDegreeFromFloat(23.439 + 0.00000036*julianDate).FullRotate()
-	rightAscension := angle.NewRadianFromFloat(math.Atan2(math.Cos(obliquity.ToRadian().ToFloat())*math.Sin(eclipticLong.ToRadian().ToFloat()), math.Cos(eclipticLong.ToRadian().ToFloat())))
-	declination := angle.NewRadianFromFloat(math.Asin(math.Sin(obliquity.ToRadian().ToFloat()) * math.Sin(eclipticLong.ToRadian().ToFloat())))
+	rightAscension := trig.Atan2(trig.Cos(obliquity)*trig.Sin(eclipticLong), trig.Cos(eclipticLong))
+	declination := trig.Asin(trig.Sin(obliquity) * trig.Sin(eclipticLong))
 
-	equationOfTime := meanLongSun.ToDegree().Sub(rightAscension.ToDegree())
+	equationOfTime := meanLongSun.Sub(rightAscension)
 	if equationOfTime.GreatherThan(angle.NewDegreeFromFloat(50.)) {
-		equationOfTime = equationOfTime.Sub(angle.NewDegreeFromFloat(360))
+		equationOfTime = equationOfTime.SubScalar(360.)
 	}
 
-	SunTransitTime := angle.NewDegreeFromFloat(12 + timezone).Sub(longitude.Div(15.)).Sub(equationOfTime.Mul(4).Div(60))
+	SunTransitTime := longitude.Div(15.).Neg().Sub(equationOfTime.Mul(4.).Div(60.)).AddScalar(12.).AddScalar(timezone)
 
 	return SunPosition{
 		JulianDate:     julianDate,

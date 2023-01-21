@@ -1,10 +1,10 @@
 package moslemSalatSchedule
 
 import (
-	"math"
 	"time"
 
 	"github.com/naufalfmm/angle"
+	"github.com/naufalfmm/angle/trig"
 	"gitlab.com/naufalfmm/moslem-salat-schedule/consts"
 	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"
@@ -128,6 +128,7 @@ func (i *impl) Midnight(opts ...salatOption.ApplyingSalatOption) (model.SalatTim
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -140,9 +141,9 @@ func (i *impl) Midnight(opts ...salatOption.ApplyingSalatOption) (model.SalatTim
 		return model.SalatTime{}, err
 	}
 
-	yesterdaySunriseOpt := salatOpt
-	yesterdaySunriseOpt.Date = yesterdaySunriseOpt.Date.Add(-24 * time.Hour)
-	yesterdaySunset := sunsetAngleTime(salatOpt)
+	yesterdaySunsetOpt := salatOpt
+	yesterdaySunsetOpt.Date = yesterdaySunsetOpt.Date.Add(-24 * time.Hour)
+	yesterdaySunset := sunsetAngleTime(yesterdaySunsetOpt)
 
 	todaySunrise := sunriseAngleTime(salatOpt)
 
@@ -169,6 +170,7 @@ func (i *impl) Fajr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, e
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -202,6 +204,7 @@ func (i *impl) Sunrise(opts ...salatOption.ApplyingSalatOption) (model.SalatTime
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -250,7 +253,7 @@ func (i *impl) Dhuhr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, 
 	return model.SalatTime{
 		Date:  salatOption.Date,
 		Salat: salatEnum.Dhuhr,
-		Time:  salatOption.RoundingTimeOption.RoundTime(salatOption.SunTransitTime.Add(angle.NewDegreeFromFloat(consts.DhuhrSlightMarginMinute / 60.)).ToTime()),
+		Time:  salatOption.RoundingTimeOption.RoundTime(salatOption.SunTransitTime.AddScalar(consts.DhuhrSlightMarginMinute / 60.).ToTime()),
 	}, nil
 }
 
@@ -269,6 +272,7 @@ func (i *impl) Asr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, er
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -281,7 +285,7 @@ func (i *impl) Asr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, er
 		return model.SalatTime{}, err
 	}
 
-	asrFactorAng := angle.NewRadianFromFloat(math.Acos((math.Sin(math.Atan(1./(salatOption.AsrMazhab.AsrShadowLength()+math.Tan(salatOption.Latitude.ToRadian().Sub(salatOption.Declination).ToFloat())))) - math.Sin(salatOption.Latitude.ToRadian().ToFloat())*math.Sin(salatOption.Declination.ToFloat())) / (math.Cos(salatOption.Latitude.ToRadian().ToFloat()) * math.Cos(salatOption.Declination.ToFloat())))).ToDegree().Div(15.)
+	asrFactorAng := trig.Acos((trig.Sin(trig.Acot(salatOption.AsrMazhab.AsrShadowLength()+trig.Tan(salatOption.Latitude.Sub(salatOption.Declination)))) - (trig.Sin(salatOption.Latitude) * trig.Sin(salatOption.Declination))) / (trig.Cos(salatOption.Latitude) * trig.Cos(salatOption.Declination))).Div(15.)
 
 	return model.SalatTime{
 		Date:  salatOption.Date,
@@ -304,6 +308,7 @@ func (i *impl) Sunset(opts ...salatOption.ApplyingSalatOption) (model.SalatTime,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -337,6 +342,7 @@ func (i *impl) Maghrib(opts ...salatOption.ApplyingSalatOption) (model.SalatTime
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -370,6 +376,7 @@ func (i *impl) Isha(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, e
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
+		Declination:    i.option.Declination,
 		SunTransitTime: i.option.SunTransitTime,
 	}
 
@@ -424,6 +431,11 @@ func (i *impl) AllTimes(opts ...salatOption.ApplyingSalatOption) (model.AllSalat
 		return model.AllSalatTimes{}, err
 	}
 
+	midnight, err := i.Midnight(opts...)
+	if err != nil {
+		return model.AllSalatTimes{}, err
+	}
+
 	fajr, err := i.Fajr(opts...)
 	if err != nil {
 		return model.AllSalatTimes{}, err
@@ -462,6 +474,7 @@ func (i *impl) AllTimes(opts ...salatOption.ApplyingSalatOption) (model.AllSalat
 	return model.AllSalatTimes{
 		Date: salatOpt.Date,
 		SalatTimes: []model.SalatTime{
+			midnight,
 			fajr,
 			sunrise,
 			dhuhr,
