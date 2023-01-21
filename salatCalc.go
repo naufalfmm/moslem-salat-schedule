@@ -110,10 +110,6 @@ func sunsetAngleTime(salatOption salatOption.SalatOption) angle.Angle {
 	return salatOption.SunTransitTime.Add(salatHighAltitude.CalcSalatHighAltitude(angle.NewDegreeFromFloat(consts.SunriseSunsetAngleFactor), salatOption.Latitude, salatOption.Declination, salatOption.Elevation))
 }
 
-func maghribAngleTime(salatOption salatOption.SalatOption) angle.Angle {
-	return sunsetAngleTime(salatOption).Add(angle.NewDegreeFromFloat(consts.MaghribSlightMarginMinute / 60.))
-}
-
 func (i *impl) Midnight(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, error) {
 	salatOpt := salatOption.SalatOption{
 		Date:           i.option.Date,
