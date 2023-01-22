@@ -281,7 +281,7 @@ func (i *impl) Asr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, er
 		return model.SalatTime{}, err
 	}
 
-	asrFactorAng := trig.Acos((trig.Sin(trig.Acot(salatOption.AsrMazhab.AsrShadowLength()+trig.Tan(salatOption.Latitude.Sub(salatOption.Declination)))) - (trig.Sin(salatOption.Latitude) * trig.Sin(salatOption.Declination))) / (trig.Cos(salatOption.Latitude) * trig.Cos(salatOption.Declination))).Div(15.)
+	asrFactorAng := trig.Acos((trig.Sin(trig.Acot(salatOption.AsrMazhab.AsrShadowLength()+trig.Tan(salatOption.Latitude.Sub(salatOption.Declination).Abs()))) - (trig.Sin(salatOption.Latitude) * trig.Sin(salatOption.Declination))) / (trig.Cos(salatOption.Latitude) * trig.Cos(salatOption.Declination))).Div(15.)
 
 	return model.SalatTime{
 		Date:  salatOption.Date,
