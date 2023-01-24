@@ -5,4 +5,5 @@ const (
 	MaghribSlightMarginMinute = 2.
 
 	SunriseSunsetAngleFactor = 0.833
+	OffsetTimezone           = 3600.
 )

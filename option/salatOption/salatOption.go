@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
+	"github.com/naufalfmm/moslem-salat-schedule/consts"
 	higherLatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/higherLat"
 	mazhabEnum "github.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
 	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
@@ -92,7 +93,7 @@ func (w withTimezone) Apply(o *SalatOption) {
 	now := time.Now().In(w.timezone)
 	_, offset := now.Zone()
 
-	WithTimezoneOffset(float64(offset) / 3600.).Apply(o)
+	WithTimezoneOffset(float64(offset) / consts.OffsetTimezone).Apply(o)
 }
 
 func WithTimezone(timezone *time.Location) ApplyingSalatOption {
