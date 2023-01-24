@@ -16,10 +16,10 @@ type Option struct {
 
 	Date time.Time
 
-	Latitude  angle.Angle
-	Longitude angle.Angle
-	Elevation float64
-	Timezone  float64
+	Latitude       angle.Angle
+	Longitude      angle.Angle
+	Elevation      float64
+	TimezoneOffset float64
 
 	FajrZenith           angle.Angle
 	IshaZenith           angle.Angle
@@ -86,15 +86,32 @@ func WithLatitudeLongitude(lat, long angle.Angle) ApplyingOption {
 	}
 }
 
+type withTimezoneOffset struct {
+	timezoneOffset float64
+}
+
+func (w withTimezoneOffset) Apply(o *Option) {
+	o.TimezoneOffset = w.timezoneOffset
+}
+
+func WithTimezoneOffset(timezoneOffset float64) ApplyingOption {
+	return withTimezoneOffset{
+		timezoneOffset: timezoneOffset,
+	}
+}
+
 type withTimezone struct {
-	timezone int64
+	timezone *time.Location
 }
 
 func (w withTimezone) Apply(o *Option) {
-	o.Timezone = float64(w.timezone)
+	now := time.Now().In(w.timezone)
+	_, offset := now.Zone()
+
+	WithTimezoneOffset(float64(offset) / 3600.).Apply(o)
 }
 
-func WithTimezone(timezone int64) ApplyingOption {
+func WithTimezone(timezone *time.Location) ApplyingOption {
 	return withTimezone{
 		timezone: timezone,
 	}

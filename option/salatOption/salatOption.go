@@ -13,10 +13,10 @@ import (
 type SalatOption struct {
 	Date time.Time
 
-	Latitude  angle.Angle
-	Longitude angle.Angle
-	Elevation float64
-	Timezone  float64
+	Latitude       angle.Angle
+	Longitude      angle.Angle
+	Elevation      float64
+	TimezoneOffset float64
 
 	FajrZenith           angle.Angle
 	IshaZenith           angle.Angle
@@ -70,15 +70,32 @@ func WithSunZenith(sunZenith sunZenithEnum.SunZenith) ApplyingSalatOption {
 	}
 }
 
+type withTimezoneOffset struct {
+	timezoneOffset float64
+}
+
+func (w withTimezoneOffset) Apply(o *SalatOption) {
+	o.TimezoneOffset = float64(w.timezoneOffset)
+}
+
+func WithTimezoneOffset(timezoneOffset float64) ApplyingSalatOption {
+	return withTimezoneOffset{
+		timezoneOffset: timezoneOffset,
+	}
+}
+
 type withTimezone struct {
-	timezone int64
+	timezone *time.Location
 }
 
 func (w withTimezone) Apply(o *SalatOption) {
-	o.Timezone = float64(w.timezone)
+	now := time.Now().In(w.timezone)
+	_, offset := now.Zone()
+
+	WithTimezoneOffset(float64(offset) / 3600.).Apply(o)
 }
 
-func WithTimezone(timezone int64) ApplyingSalatOption {
+func WithTimezone(timezone *time.Location) ApplyingSalatOption {
 	return withTimezone{
 		timezone: timezone,
 	}

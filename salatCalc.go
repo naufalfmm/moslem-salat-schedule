@@ -109,10 +109,10 @@ func (i *impl) Midnight(opts ...salatOption.ApplyingSalatOption) (model.SalatTim
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -151,10 +151,10 @@ func (i *impl) Fajr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, e
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -185,10 +185,10 @@ func (i *impl) Sunrise(opts ...salatOption.ApplyingSalatOption) (model.SalatTime
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -219,10 +219,10 @@ func (i *impl) Dhuhr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, 
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -253,10 +253,10 @@ func (i *impl) Asr(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, er
 		IshaZenithType: i.option.IshaZenithType,
 		AsrMazhab:      i.option.AsrMazhab,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -289,10 +289,10 @@ func (i *impl) Sunset(opts ...salatOption.ApplyingSalatOption) (model.SalatTime,
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -323,10 +323,10 @@ func (i *impl) Maghrib(opts ...salatOption.ApplyingSalatOption) (model.SalatTime
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -357,10 +357,10 @@ func (i *impl) Isha(opts ...salatOption.ApplyingSalatOption) (model.SalatTime, e
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 
@@ -400,10 +400,10 @@ func (i *impl) AllTimes(opts ...salatOption.ApplyingSalatOption) (model.AllSalat
 		IshaZenith:     i.option.IshaZenith,
 		IshaZenithType: i.option.IshaZenithType,
 
-		Latitude:  i.option.Latitude,
-		Longitude: i.option.Longitude,
-		Elevation: i.option.Elevation,
-		Timezone:  i.option.Timezone,
+		Latitude:       i.option.Latitude,
+		Longitude:      i.option.Longitude,
+		Elevation:      i.option.Elevation,
+		TimezoneOffset: i.option.TimezoneOffset,
 
 		RoundingTimeOption: i.option.RoundingTimeOption,
 

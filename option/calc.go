@@ -29,7 +29,7 @@ func (o *Option) SetDate(date time.Time) {
 
 	o = o.calcJulianDay()
 
-	o.fillSunPosition(o.julianDay, o.Timezone, o.Longitude)
+	o.fillSunPosition(o.julianDay, o.TimezoneOffset, o.Longitude)
 }
 
 func (o *Option) Now() {
@@ -65,7 +65,7 @@ func (o *Option) calcJulianDay() *Option {
 		b = 2.0 - a + math.Floor(a/4.0)
 	}
 
-	o.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (12-o.Timezone)/24
+	o.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (12-o.TimezoneOffset)/24
 
 	return o
 }

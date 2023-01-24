@@ -29,7 +29,7 @@ func (s *SalatOption) SetDate(date time.Time) {
 
 	s = s.calcJulianDay()
 
-	s.fillSunPosition(s.julianDay, s.Timezone, s.Longitude)
+	s.fillSunPosition(s.julianDay, s.TimezoneOffset, s.Longitude)
 }
 
 func (s *SalatOption) Now() {
@@ -65,7 +65,7 @@ func (s *SalatOption) calcJulianDay() *SalatOption {
 		b = 2.0 - a + math.Floor(a/4.0)
 	}
 
-	s.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (float64(s.Date.Hour())-s.Timezone)/24
+	s.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (float64(s.Date.Hour())-s.TimezoneOffset)/24
 
 	return s
 }
