@@ -25,14 +25,6 @@ func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.Option, sal
 		opt.Date = defaultOpt.Date
 	}
 
-	if opt.Timezone == 0 {
-		if defaultOpt.Timezone == 0 {
-			return salatOption.SalatOption{}, err.ErrTimezoneMissing
-		}
-
-		opt.Timezone = defaultOpt.Timezone
-	}
-
 	if opt.Latitude.IsZero() {
 		if defaultOpt.Latitude.IsZero() {
 			return salatOption.SalatOption{}, err.ErrLatitudeMissing
