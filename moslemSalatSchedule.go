@@ -3,8 +3,8 @@ package moslemSalatSchedule
 import (
 	"time"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/model"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/option/salatOption"
+	"github.com/naufalfmm/moslem-salat-schedule/model"
+	"github.com/naufalfmm/moslem-salat-schedule/option/salatOption"
 )
 
 type MoslemSalatSchedule interface {

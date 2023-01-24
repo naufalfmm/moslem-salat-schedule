@@ -1,8 +1,8 @@
 package moslemSalatSchedule
 
 import (
-	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/option"
+	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
+	"github.com/naufalfmm/moslem-salat-schedule/option"
 )
 
 type impl struct {

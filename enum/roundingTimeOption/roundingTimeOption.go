@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
+	"github.com/naufalfmm/moslem-salat-schedule/err"
 )
 
 type (

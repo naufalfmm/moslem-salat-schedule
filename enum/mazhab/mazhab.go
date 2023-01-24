@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
+	"github.com/naufalfmm/moslem-salat-schedule/err"
 )
 
 type (

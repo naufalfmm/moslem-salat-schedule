@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"
+	salatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/salat"
 )
 
 type (

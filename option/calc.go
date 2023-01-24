@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/utils/sunPosition"
+	"github.com/naufalfmm/moslem-salat-schedule/utils/sunPosition"
 )
 
 func (o *Option) fillSunPosition(julianDay, timezone float64, longitude angle.Angle) {

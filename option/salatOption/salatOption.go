@@ -4,9 +4,10 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
-	mazhabEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
-	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
+	higherLatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/higherLat"
+	mazhabEnum "github.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
+	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
+	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 )
 
 type SalatOption struct {
@@ -17,10 +18,11 @@ type SalatOption struct {
 	Elevation float64
 	Timezone  float64
 
-	FajrZenith     angle.Angle
-	IshaZenith     angle.Angle
-	IshaZenithType sunZenithEnum.IshaZenithType
-	AsrMazhab      mazhabEnum.Mazhab
+	FajrZenith           angle.Angle
+	IshaZenith           angle.Angle
+	IshaZenithType       sunZenithEnum.IshaZenithType
+	AsrMazhab            mazhabEnum.Mazhab
+	HigherLatitudeMethod higherLatEnum.HigherLat
 
 	RoundingTimeOption roundingTimeOptionEnum.RoundingTimeOption
 
@@ -107,5 +109,19 @@ func (w withRoundingTimeOption) Apply(o *SalatOption) {
 func WithRoundingTimeOption(roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption) ApplyingSalatOption {
 	return withRoundingTimeOption{
 		roundingTimeOpt: roundingTimeOpt,
+	}
+}
+
+type withHigherLatitudeMethod struct {
+	higherLatMethod higherLatEnum.HigherLat
+}
+
+func (w withHigherLatitudeMethod) Apply(o *SalatOption) {
+	o.HigherLatitudeMethod = w.higherLatMethod
+}
+
+func WithHigherLatitudeMethod(higherLatMethod higherLatEnum.HigherLat) ApplyingSalatOption {
+	return withHigherLatitudeMethod{
+		higherLatMethod: higherLatMethod,
 	}
 }

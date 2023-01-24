@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
-	mazhabEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
-	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
+	higherLatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/higherLat"
+	mazhabEnum "github.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
+	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
+	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 )
 
 type Option struct {
@@ -20,10 +21,11 @@ type Option struct {
 	Elevation float64
 	Timezone  float64
 
-	FajrZenith     angle.Angle
-	IshaZenith     angle.Angle
-	IshaZenithType sunZenithEnum.IshaZenithType
-	AsrMazhab      mazhabEnum.Mazhab
+	FajrZenith           angle.Angle
+	IshaZenith           angle.Angle
+	IshaZenithType       sunZenithEnum.IshaZenithType
+	AsrMazhab            mazhabEnum.Mazhab
+	HigherLatitudeMethod higherLatEnum.HigherLat
 
 	RoundingTimeOption roundingTimeOptionEnum.RoundingTimeOption
 
@@ -48,6 +50,10 @@ func (opt Option) Validate() error {
 
 	if opt.Elevation == 0 {
 		return errors.New("elevation should be exist")
+	}
+
+	if opt.HigherLatitudeMethod == 0 {
+		opt.HigherLatitudeMethod = higherLatEnum.None
 	}
 
 	return nil
@@ -167,5 +173,19 @@ func (w withRoundingTimeOption) Apply(o *Option) {
 func WithRoundingTimeOption(roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption) ApplyingOption {
 	return withRoundingTimeOption{
 		roundingTimeOpt: roundingTimeOpt,
+	}
+}
+
+type withHigherLatitudeMethod struct {
+	higherLatMethod higherLatEnum.HigherLat
+}
+
+func (w withHigherLatitudeMethod) Apply(o *Option) {
+	o.HigherLatitudeMethod = w.higherLatMethod
+}
+
+func WithHigherLatitudeMethod(higherLatMethod higherLatEnum.HigherLat) ApplyingOption {
+	return withHigherLatitudeMethod{
+		higherLatMethod: higherLatMethod,
 	}
 }

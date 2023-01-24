@@ -5,15 +5,15 @@ import (
 
 	"github.com/naufalfmm/angle"
 	"github.com/naufalfmm/angle/trig"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/consts"
-	roundingTimeOptionEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	salatEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/salat"
-	sunZenithEnum "gitlab.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/model"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/option"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/option/salatOption"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/utils/salatHighAltitude"
+	"github.com/naufalfmm/moslem-salat-schedule/consts"
+	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
+	salatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/salat"
+	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
+	"github.com/naufalfmm/moslem-salat-schedule/err"
+	"github.com/naufalfmm/moslem-salat-schedule/model"
+	"github.com/naufalfmm/moslem-salat-schedule/option"
+	"github.com/naufalfmm/moslem-salat-schedule/option/salatOption"
+	"github.com/naufalfmm/moslem-salat-schedule/utils/salatHighAltitude"
 )
 
 func checkSalatOption(opt salatOption.SalatOption, defaultOpt option.Option, salat salatEnum.Salat) (salatOption.SalatOption, error) {

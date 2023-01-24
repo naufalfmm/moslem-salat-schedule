@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 
-	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
+	"github.com/naufalfmm/moslem-salat-schedule/err"
 )
 
 type (
@@ -19,19 +19,22 @@ type (
 )
 
 const (
-	// Midnight .
-	Midnight HigherLat = iota + 1
+	// NightMiddle .
+	NightMiddle HigherLat = iota + 1
 	// OneSeventh .
 	OneSeventh
 	// AngleBased .
 	AngleBased
+	// None .
+	None
 )
 
 var (
 	higherLatConsts = []HigherLatClass{
-		{"midnight", "Midnight"},
+		{"nightMiddle", "NightMiddle"},
 		{"oneSeventh", "OneSeventh"},
 		{"angleBased", "AngleBased"},
+		{"none", "None"},
 	}
 )
 
@@ -132,7 +135,7 @@ func AsCompleteConstants() []HigherLatClass {
 
 func GetAll() []HigherLat {
 	return []HigherLat{
-		Midnight,
+		NightMiddle,
 		OneSeventh,
 		AngleBased,
 	}

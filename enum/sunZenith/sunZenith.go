@@ -6,7 +6,7 @@ import (
 
 	"github.com/naufalfmm/angle"
 	"github.com/naufalfmm/angle/consts"
-	"gitlab.com/naufalfmm/moslem-salat-schedule/err"
+	"github.com/naufalfmm/moslem-salat-schedule/err"
 )
 
 type (
