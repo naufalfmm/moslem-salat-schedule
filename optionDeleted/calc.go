@@ -1,4 +1,4 @@
-package option
+package optionDeleted
 
 import (
 	"math"
@@ -25,7 +25,7 @@ func (o *Option) fillSunPosition(julianDay, timezone float64, longitude angle.An
 }
 
 func (o *Option) SetDate(date time.Time) {
-	o.Date = time.Date(date.Year(), date.Month(), date.Day(), 12., 0, 0, 0, date.Location())
+	o.DateStart = time.Date(date.Year(), date.Month(), date.Day(), 12., 0, 0, 0, date.Location())
 
 	o = o.calcJulianDay()
 
@@ -37,13 +37,13 @@ func (o *Option) Now() {
 }
 
 func (o *Option) calcJulianDay() *Option {
-	if o.Date.IsZero() {
+	if o.DateStart.IsZero() {
 		o.Now()
 	}
 
-	year := float64(o.Date.Year())
-	month := float64(o.Date.Month())
-	date := float64(o.Date.Day())
+	year := float64(o.DateStart.Year())
+	month := float64(o.DateStart.Month())
+	date := float64(o.DateStart.Day())
 
 	if month < 3 {
 		year = year - 1

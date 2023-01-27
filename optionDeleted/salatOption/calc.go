@@ -25,7 +25,7 @@ func (s *SalatOption) fillSunPosition(julianDay, timezone float64, longitude ang
 }
 
 func (s *SalatOption) SetDate(date time.Time) {
-	s.Date = time.Date(date.Year(), date.Month(), date.Day(), 12., 0, 0, 0, date.Location())
+	s.DateStart = time.Date(date.Year(), date.Month(), date.Day(), 12., 0, 0, 0, date.Location())
 
 	s = s.calcJulianDay()
 
@@ -37,13 +37,13 @@ func (s *SalatOption) Now() {
 }
 
 func (s *SalatOption) calcJulianDay() *SalatOption {
-	if s.Date.IsZero() {
+	if s.DateStart.IsZero() {
 		s.Now()
 	}
 
-	year := float64(s.Date.Year())
-	month := float64(s.Date.Month())
-	date := float64(s.Date.Day())
+	year := float64(s.DateStart.Year())
+	month := float64(s.DateStart.Month())
+	date := float64(s.DateStart.Day())
 
 	if month < 3 {
 		year = year - 1
@@ -65,7 +65,7 @@ func (s *SalatOption) calcJulianDay() *SalatOption {
 		b = 2.0 - a + math.Floor(a/4.0)
 	}
 
-	s.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (float64(s.Date.Hour())-s.TimezoneOffset)/24
+	s.julianDay = 1720994.5 + math.Floor(365.25*year) + math.Floor(30.6001*(month+1)) + b + date + (float64(s.DateStart.Hour())-s.TimezoneOffset)/24
 
 	return s
 }

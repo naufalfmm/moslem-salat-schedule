@@ -7,12 +7,15 @@ import (
 	"github.com/naufalfmm/moslem-salat-schedule/consts"
 	higherLatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/higherLat"
 	mazhabEnum "github.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
+	periodicalEnum "github.com/naufalfmm/moslem-salat-schedule/enum/periodical"
 	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
 	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
 )
 
 type SalatOption struct {
-	Date time.Time
+	DateStart  time.Time
+	DateEnd    time.Time
+	Periodical periodicalEnum.Periodical
 
 	Latitude       angle.Angle
 	Longitude      angle.Angle
