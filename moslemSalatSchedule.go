@@ -6,9 +6,6 @@ import (
 )
 
 type MoslemSalatSchedule interface {
-	// SetDate(date time.Time) MoslemSalatSchedule
-	// Now() MoslemSalatSchedule
-
 	Midnight(opt option.Option) (model.PeriodicSalatTime, error)
 	Fajr(opt option.Option) (model.PeriodicSalatTime, error)
 	Sunrise(opt option.Option) (model.PeriodicSalatTime, error)

@@ -40,58 +40,6 @@ func (c CommOpt) ToOption() opt {
 	return opt(c)
 }
 
-// func (c CommOpt) Validate() error {
-// 	if c.dateStart.IsZero() {
-// 		SetNow().Apply(&c)
-// 	}
-
-// 	if c.latitude.IsZero() {
-// 		return err.ErrLatitudeMissing
-// 	}
-
-// 	if c.longitude.IsZero() {
-// 		return err.ErrLongitudeMissing
-// 	}
-
-// 	if c.latitude.IsZero() {
-// 		return err.ErrLatitudeMissing
-// 	}
-
-// 	if c.longitude.IsZero() {
-// 		return err.ErrLongitudeMissing
-// 	}
-
-// 	if c.latitude.AngleType() != c.longitude.AngleType() {
-// 		c.longitude = c.longitude.ToSpecificType(c.latitude.AngleType())
-// 	}
-
-// 	if c.timezoneLoc == nil {
-// 		c.timezoneLoc = time.UTC
-// 	}
-
-// 	if c.fajrZenith.IsZero() {
-// 		return err.ErrFajrZenithMissing
-// 	}
-
-// 	if c.ishaZenith.IsZero() {
-// 		return err.ErrIshaZenithMissing
-// 	}
-
-// 	if c.mazhab == 0 {
-// 		return err.ErrMazhabMissing
-// 	}
-
-// 	if c.higherLatitudeMethod == 0 {
-// 		c.higherLatitudeMethod = higherLatEnum.None
-// 	}
-
-// 	if c.roundingTimeOption == 0 {
-// 		c.roundingTimeOption = roundingTimeOptionEnum.Default
-// 	}
-
-// 	return nil
-// }
-
 func (c *CommOpt) CalculateSunPositions() (CommOpt, error) {
 	if len(c.sunPositions) > 0 {
 		return *c, nil
