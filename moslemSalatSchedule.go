@@ -1,11 +1,11 @@
-package moslemSalatSchedule
+package moslemSalatTimes
 
 import (
-	"github.com/naufalfmm/moslem-salat-schedule/model"
-	"github.com/naufalfmm/moslem-salat-schedule/option"
+	"github.com/naufalfmm/moslem-salat-times/model"
+	"github.com/naufalfmm/moslem-salat-times/option"
 )
 
-type MoslemSalatSchedule interface {
+type MoslemSalatTimes interface {
 	Midnight(opt option.Option) (model.PeriodicSalatTime, error)
 	Fajr(opt option.Option) (model.PeriodicSalatTime, error)
 	Sunrise(opt option.Option) (model.PeriodicSalatTime, error)

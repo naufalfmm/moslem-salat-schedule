@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
-	"github.com/naufalfmm/moslem-salat-schedule/consts"
-	salatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/salat"
-	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
-	"github.com/naufalfmm/moslem-salat-schedule/model"
-	"github.com/naufalfmm/moslem-salat-schedule/option"
-	"github.com/naufalfmm/moslem-salat-schedule/utils/sunPositions"
+	"github.com/naufalfmm/moslem-salat-times/consts"
+	salatEnum "github.com/naufalfmm/moslem-salat-times/enum/salat"
+	sunZenithEnum "github.com/naufalfmm/moslem-salat-times/enum/sunZenith"
+	"github.com/naufalfmm/moslem-salat-times/model"
+	"github.com/naufalfmm/moslem-salat-times/option"
+	"github.com/naufalfmm/moslem-salat-times/utils/sunPositions"
 )
 
 func sunriseAngleTime(opt option.Option, sunPos sunPositions.SunPosition) angle.Angle {

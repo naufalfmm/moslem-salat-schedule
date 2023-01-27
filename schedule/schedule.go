@@ -1,6 +1,6 @@
 package schedule
 
-import "github.com/naufalfmm/moslem-salat-schedule/option"
+import "github.com/naufalfmm/moslem-salat-times/option"
 
 type Schedule struct {
 	Opt CommOpt

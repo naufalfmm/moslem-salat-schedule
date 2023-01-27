@@ -1,4 +1,4 @@
-module github.com/naufalfmm/moslem-salat-schedule
+module github.com/naufalfmm/moslem-salat-times
 
 go 1.19
 

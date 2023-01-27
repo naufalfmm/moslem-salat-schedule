@@ -5,8 +5,8 @@ import (
 
 	"github.com/naufalfmm/angle"
 	"github.com/naufalfmm/angle/trig"
-	"github.com/naufalfmm/moslem-salat-schedule/consts"
-	"github.com/naufalfmm/moslem-salat-schedule/utils/julian"
+	"github.com/naufalfmm/moslem-salat-times/consts"
+	"github.com/naufalfmm/moslem-salat-times/utils/julian"
 )
 
 type (

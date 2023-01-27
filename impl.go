@@ -1,10 +1,10 @@
-package moslemSalatSchedule
+package moslemSalatTimes
 
 import (
-	"github.com/naufalfmm/moslem-salat-schedule/schedule"
+	"github.com/naufalfmm/moslem-salat-times/schedule"
 )
 
-func New(applyOpts ...schedule.ApplyCommOpt) (MoslemSalatSchedule, error) {
+func New(applyOpts ...schedule.ApplyCommOpt) (MoslemSalatTimes, error) {
 	opt := schedule.CommOpt{}
 
 	for _, applyOpt := range applyOpts {

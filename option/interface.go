@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"github.com/naufalfmm/angle"
-	higherLatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/higherLat"
-	mazhabEnum "github.com/naufalfmm/moslem-salat-schedule/enum/mazhab"
-	periodicalEnum "github.com/naufalfmm/moslem-salat-schedule/enum/periodical"
-	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	salatEnum "github.com/naufalfmm/moslem-salat-schedule/enum/salat"
-	sunZenithEnum "github.com/naufalfmm/moslem-salat-schedule/enum/sunZenith"
-	"github.com/naufalfmm/moslem-salat-schedule/utils/sunPositions"
+	higherLatEnum "github.com/naufalfmm/moslem-salat-times/enum/higherLat"
+	mazhabEnum "github.com/naufalfmm/moslem-salat-times/enum/mazhab"
+	periodicalEnum "github.com/naufalfmm/moslem-salat-times/enum/periodical"
+	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-times/enum/roundingTimeOption"
+	salatEnum "github.com/naufalfmm/moslem-salat-times/enum/salat"
+	sunZenithEnum "github.com/naufalfmm/moslem-salat-times/enum/sunZenith"
+	"github.com/naufalfmm/moslem-salat-times/utils/sunPositions"
 )
 
 type Option interface {
