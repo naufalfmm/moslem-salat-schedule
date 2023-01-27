@@ -1,28 +1,22 @@
 package moslemSalatSchedule
 
 import (
-	roundingTimeOptionEnum "github.com/naufalfmm/moslem-salat-schedule/enum/roundingTimeOption"
-	"github.com/naufalfmm/moslem-salat-schedule/option"
+	"github.com/naufalfmm/moslem-salat-schedule/schedule"
 )
 
-type impl struct {
-	option option.Option
-}
+func New(applyOpts ...schedule.ApplyCommOpt) (MoslemSalatSchedule, error) {
+	opt := schedule.CommOpt{}
 
-func New(opts ...option.ApplyingOption) (MoslemSalatSchedule, error) {
-	option := option.Option{
-		RoundingTimeOption: roundingTimeOptionEnum.Default,
+	for _, applyOpt := range applyOpts {
+		applyOpt.Apply(&opt)
 	}
 
-	for _, opt := range opts {
-		opt.Apply(&option)
-	}
-
-	if err := option.Validate(); err != nil {
+	opt, err := opt.CalculateSunPositions()
+	if err != nil {
 		return nil, err
 	}
 
-	return &impl{
-		option: option,
+	return &schedule.Schedule{
+		Opt: opt,
 	}, nil
 }

@@ -13,10 +13,12 @@ type (
 		Time  time.Time       `json:"time"`
 	}
 
-	SalatTimes []SalatTime
+	PeriodicSalatTime []SalatTime
 
-	 AllSalatTimes struct {
-		Date       time.Time  `json:"date"`
-		SalatTimes SalatTimes `json:"salat_times"`
+	AllSalatTime struct {
+		Date       time.Time         `json:"date"`
+		SalatTimes PeriodicSalatTime `json:"salat_times"`
 	}
+
+	PeriodicAllSalatTime []AllSalatTime
 )

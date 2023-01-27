@@ -28,7 +28,7 @@ const (
 
 var (
 	mazhabConsts = []MazhabClass{
-		{"syafii", "Syafii", 1},
+		{"standard", "Standard", 1},
 		{"hanafi", "Hanafi", 2},
 	}
 )
@@ -118,10 +118,6 @@ func (c *Mazhab) Scan(val interface{}) error {
 // Value encodes value to the DB
 func (c Mazhab) Value() (driver.Value, error) {
 	return string(c.Code()), nil
-}
-
-func (c Mazhab) CalculateTax(price float64) float64 {
-	return float64(c.AsrShadowLength()) / 100.0 * price
 }
 
 func findIndex(code string, selector func(c MazhabClass) string) int {
