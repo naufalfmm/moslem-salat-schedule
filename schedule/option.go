@@ -19,7 +19,7 @@ import (
 	"github.com/naufalfmm/moslem-salat-times/utils/sunPositions"
 )
 
-type opt struct {
+type Option struct {
 	dateStart  time.Time
 	dateEnd    time.Time
 	periodical periodicalEnum.Periodical
@@ -41,7 +41,7 @@ type opt struct {
 	sunPositions sunPositions.SunPositions
 }
 
-func (o *opt) SetDateRange(dateStart, dateEnd time.Time) option.Option {
+func (o *Option) SetDateRange(dateStart, dateEnd time.Time) option.Option {
 	o.dateStart = dateStart
 	o.dateEnd = dateEnd
 	o.periodical = periodicalEnum.GetByDateRange(dateStart, dateEnd)
@@ -51,11 +51,11 @@ func (o *opt) SetDateRange(dateStart, dateEnd time.Time) option.Option {
 	return o
 }
 
-func (o *opt) SetNow() option.Option {
+func (o *Option) SetNow() option.Option {
 	return o.SetDateRange(time.Now(), time.Now())
 }
 
-func (o *opt) SetDatePeriodical(dateStart time.Time, periodical periodicalEnum.Periodical) option.Option {
+func (o *Option) SetDatePeriodical(dateStart time.Time, periodical periodicalEnum.Periodical) option.Option {
 	o.dateStart, o.dateEnd = periodical.GetDateRange(dateStart)
 	o.periodical = periodical
 
@@ -64,7 +64,7 @@ func (o *opt) SetDatePeriodical(dateStart time.Time, periodical periodicalEnum.P
 	return o
 }
 
-func (o *opt) SetPeriodical(periodical periodicalEnum.Periodical) option.Option {
+func (o *Option) SetPeriodical(periodical periodicalEnum.Periodical) option.Option {
 	if o.dateStart.IsZero() {
 		o.dateStart = time.Now()
 	}
@@ -72,38 +72,38 @@ func (o *opt) SetPeriodical(periodical periodicalEnum.Periodical) option.Option 
 	return o.SetDatePeriodical(o.dateStart, periodical)
 }
 
-func (o *opt) SetLatitudeLongitude(latitude, longitude angle.Angle) option.Option {
+func (o *Option) SetLatitudeLongitude(latitude, longitude angle.Angle) option.Option {
 	o.latitude = latitude
 	o.longitude = longitude
 
 	return o
 }
 
-func (o *opt) SetElevation(elevation float64) option.Option {
+func (o *Option) SetElevation(elevation float64) option.Option {
 	o.elevation = elevation
 
 	return o
 }
 
-func (o *opt) SetMazhab(mazhab mazhabEnum.Mazhab) option.Option {
+func (o *Option) SetMazhab(mazhab mazhabEnum.Mazhab) option.Option {
 	o.mazhab = mazhab
 
 	return o
 }
 
-func (o *opt) SetHigherLatitudeMethod(higherLatMethod higherLatEnum.HigherLat) option.Option {
+func (o *Option) SetHigherLatitudeMethod(higherLatMethod higherLatEnum.HigherLat) option.Option {
 	o.higherLatitudeMethod = higherLatMethod
 
 	return o
 }
 
-func (o *opt) SetRoundingTimeOption(roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption) option.Option {
+func (o *Option) SetRoundingTimeOption(roundingTimeOpt roundingTimeOptionEnum.RoundingTimeOption) option.Option {
 	o.roundingTimeOption = roundingTimeOpt
 
 	return o
 }
 
-func (o *opt) SetTimezoneOffset(timezoneOffset float64) option.Option {
+func (o *Option) SetTimezoneOffset(timezoneOffset float64) option.Option {
 	angTime := angle.NewDegreeFromFloat(timezoneOffset)
 
 	negStr := ""
@@ -116,13 +116,13 @@ func (o *opt) SetTimezoneOffset(timezoneOffset float64) option.Option {
 	return o
 }
 
-func (o *opt) SetTimezone(timezone *time.Location) option.Option {
+func (o *Option) SetTimezone(timezone *time.Location) option.Option {
 	o.timezoneLoc = timezone
 
 	return o
 }
 
-func (o *opt) SetFajrIshaZenith(fajrZenith, ishaZenith angle.Angle) option.Option {
+func (o *Option) SetFajrIshaZenith(fajrZenith, ishaZenith angle.Angle) option.Option {
 	o.fajrZenith = fajrZenith
 	o.ishaZenith = ishaZenith
 	o.ishaZenithType = sunZenithEnum.Standard
@@ -130,7 +130,7 @@ func (o *opt) SetFajrIshaZenith(fajrZenith, ishaZenith angle.Angle) option.Optio
 	return o
 }
 
-func (o *opt) SetSunZenith(sunZenith sunZenithEnum.SunZenith) option.Option {
+func (o *Option) SetSunZenith(sunZenith sunZenithEnum.SunZenith) option.Option {
 	o.fajrZenith = sunZenith.FajrZenith()
 	o.ishaZenith = sunZenith.IshaZenith().Angle
 	o.ishaZenithType = sunZenith.IshaZenith().Type
@@ -138,7 +138,7 @@ func (o *opt) SetSunZenith(sunZenith sunZenithEnum.SunZenith) option.Option {
 	return o
 }
 
-func (o *opt) ValidateBySalat(salat salatEnum.Salat) error {
+func (o *Option) ValidateBySalat(salat salatEnum.Salat) error {
 	if o.dateStart.IsZero() {
 		return err.ErrDateMissing
 	}
@@ -174,7 +174,7 @@ func (o *opt) ValidateBySalat(salat salatEnum.Salat) error {
 	return nil
 }
 
-func (o *opt) CalculateSunPositions() (option.Option, error) {
+func (o *Option) CalculateSunPositions() (option.Option, error) {
 	if len(o.sunPositions) != 0 {
 		return o, nil
 	}
@@ -183,19 +183,19 @@ func (o *opt) CalculateSunPositions() (option.Option, error) {
 	return o, nil
 }
 
-func (o *opt) CalculateFajrHighAltitude(declination angle.Angle) angle.Angle {
+func (o *Option) CalculateFajrHighAltitude(declination angle.Angle) angle.Angle {
 	return salatHighAltitude.CalcSalatHighAltitude(o.fajrZenith, o.latitude, declination, o.elevation)
 }
 
-func (o *opt) CalculateSunriseSunsetHighAltitude(declination angle.Angle) angle.Angle {
+func (o *Option) CalculateSunriseSunsetHighAltitude(declination angle.Angle) angle.Angle {
 	return salatHighAltitude.CalcSalatHighAltitude(angle.NewDegreeFromFloat(consts.SunriseSunsetAngleFactor), o.latitude, declination, o.elevation)
 }
 
-func (o *opt) CalculateAsrAngle(declination angle.Angle) angle.Angle {
+func (o *Option) CalculateAsrAngle(declination angle.Angle) angle.Angle {
 	return trig.Acos((trig.Sin(trig.Acot(o.mazhab.AsrShadowLength()+trig.Tan(o.latitude.Sub(declination).Abs()))) - (trig.Sin(o.latitude) * trig.Sin(declination))) / (trig.Cos(o.latitude) * trig.Cos(declination))).Div(15.)
 }
 
-func (o *opt) CalculateIshaHighAltitude(declination angle.Angle) (angle.Angle, sunZenithEnum.IshaZenithType) {
+func (o *Option) CalculateIshaHighAltitude(declination angle.Angle) (angle.Angle, sunZenithEnum.IshaZenithType) {
 	if o.ishaZenithType == sunZenithEnum.Standard {
 		return salatHighAltitude.CalcSalatHighAltitude(o.ishaZenith, o.latitude, declination, o.elevation), o.ishaZenithType
 	}
@@ -203,14 +203,14 @@ func (o *opt) CalculateIshaHighAltitude(declination angle.Angle) (angle.Angle, s
 	return o.ishaZenith, o.ishaZenithType
 }
 
-func (o *opt) RoundTime(t time.Time) time.Time {
+func (o *Option) RoundTime(t time.Time) time.Time {
 	return o.roundingTimeOption.RoundTime(t)
 }
 
-func (o *opt) GetSunPositions() sunPositions.SunPositions {
+func (o *Option) GetSunPositions() sunPositions.SunPositions {
 	return o.sunPositions
 }
 
-func (o *opt) GetDateRange() (time.Time, time.Time) {
+func (o *Option) GetDateRange() (time.Time, time.Time) {
 	return o.dateStart, o.dateEnd
 }

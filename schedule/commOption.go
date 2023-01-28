@@ -36,8 +36,8 @@ type CommOpt struct {
 	sunPositions sunPositions.SunPositions
 }
 
-func (c CommOpt) ToOption() opt {
-	return opt(c)
+func (c CommOpt) ToOption() Option {
+	return Option(c)
 }
 
 func (c *CommOpt) CalculateSunPositions() (CommOpt, error) {
