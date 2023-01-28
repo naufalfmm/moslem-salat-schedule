@@ -74,7 +74,7 @@ func (s setNow) Apply(o *CommOpt) {
 	o.periodical = periodicalEnum.Custom
 }
 
-func SetNow() setNow {
+func SetNow() ApplyCommOpt {
 	return setNow{}
 }
 
